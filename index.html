@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Veri Terminali</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    .app {
+      padding: 20px;
+    }
+
+    .top {
+      background: #111;
+      border-radius: 16px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .market {
+      display: flex;
+      justify-content: space-between;
+      background: #151515;
+      padding: 14px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .box {
+      text-align: center;
+      width: 33%;
+    }
+
+    .box small {
+      color: #777;
+      font-weight: bold;
+    }
+
+    .box strong {
+      display: block;
+      font-size: 18px;
+      margin-top: 5px;
+    }
+
+    .green {
+      color: #00c896;
+    }
+
+    .empty {
+      text-align: center;
+      margin-top: 120px;
+      color: #777;
+    }
+
+    .empty .star {
+      font-size: 60px;
+      color: #222;
+    }
+
+    button {
+      background: #111;
+      border: 1px solid #333;
+      color: #55e0e0;
+      padding: 14px 25px;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .bottom {
+      position: fixed;
+      bottom: 15px;
+      left: 15px;
+      right: 15px;
+      background: #090909;
+      border: 1px solid #222;
+      border-radius: 25px;
+      display: flex;
+      justify-content: space-around;
+      padding: 14px 5px;
+    }
+
+    .nav {
+      color: #777;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .nav.active {
+      color: white;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app">
+    <div class="top">
+      <h2>Merhaba Dostum! 🌤️</h2>
+    </div>
+
+    <div class="market">
+      <div class="box">
+        <small>BİST 100</small>
+        <strong>13.808,2</strong>
+        <span class="green">+4.89%</span>
+      </div>
+
+      <div class="box">
+        <small>BİST 30</small>
+        <strong>15.791,1</strong>
+        <span class="green">+4.91%</span>
+      </div>
+
+      <div class="box">
+        <small>VİOP</small>
+        <strong>16.115</strong>
+        <span class="green">+5.97%</span>
+      </div>
+    </div>
+
+    <div class="empty">
+      <div class="star">☆</div>
+      <h3>Favoriler listesi boş</h3>
+      <p>Takip etmek istediğin hisseleri<br>ekleyerek başla</p>
+      <button>+ Hisse Ekle</button>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="nav active">🏠<br>Anasayfa</div>
+    <div class="nav">🏢<br>Kurumsal</div>
+    <div class="nav">•••<br>Diğer</div>
+    <div class="nav">◔<br>Portföy</div>
+    <div class="nav">▣<br>Fon</div>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.ready();
+  </script>
+
+</body>
+</html>

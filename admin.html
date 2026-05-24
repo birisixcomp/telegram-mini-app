@@ -3,30 +3,172 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Panel</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background:#050505;
+      color:white;
+      font-family:Arial, sans-serif;
+      padding:30px;
+      margin:0;
+    }
+
+    h1 {
+      margin-top:0;
+    }
+
+    h3 {
+      margin-top:28px;
+      color:#00e0a4;
+    }
+
+    input, textarea {
+      padding:12px;
+      width:350px;
+      max-width:100%;
+      margin-bottom:10px;
+      background:#111;
+      color:white;
+      border:1px solid #333;
+      border-radius:10px;
+      outline:none;
+    }
+
+    textarea {
+      height:110px;
+      resize:vertical;
+    }
+
+    button {
+      padding:11px 16px;
+      background:#00c896;
+      color:#000;
+      border:none;
+      border-radius:10px;
+      font-weight:bold;
+      cursor:pointer;
+      margin:4px 4px 4px 0;
+    }
+
+    button.danger {
+      background:#ff4d4d;
+      color:white;
+    }
+
+    .section {
+      padding:20px;
+      background:#0d0d0d;
+      border:1px solid #222;
+      border-radius:16px;
+      max-width:760px;
+      margin-bottom:22px;
+    }
+
+    .item {
+      margin:10px 0;
+      padding:12px;
+      background:#111;
+      border-radius:10px;
+      max-width:720px;
+      border:1px solid #222;
+    }
+
+    .muted {
+      color:#888;
+      font-size:13px;
+    }
+
+    hr {
+      margin:35px 0;
+      border-color:#222;
+    }
+  </style>
 </head>
-<body style="background:#050505;color:white;font-family:Arial;padding:30px;">
+
+<body>
 
   <h1>Admin Panel</h1>
 
-  <h3>VIP Kullanıcı Ekle</h3>
-  <input id="vipId" placeholder="Telegram ID" style="padding:12px;width:250px;">
-  <button onclick="addVip()">VIP Ekle</button>
+  <div class="section">
+    <h3>VIP Kullanıcı Ekle</h3>
+    <input id="vipId" placeholder="Telegram ID">
+    <br>
+    <button onclick="addVip()">VIP Ekle</button>
 
-  <h3>VIP Listesi</h3>
-  <div id="vipList"></div>
+    <h3>VIP Listesi</h3>
+    <div id="vipList"></div>
+  </div>
 
-  <hr style="margin:35px 0;border-color:#222;">
+  <div class="section">
+    <h3>Terminale Anlık Sinyal Gönder</h3>
 
-  <h3>Terminale Anlık Sinyal Gönder</h3>
+    <input id="signalTitle" placeholder="Başlık: Örn. ASELS Sinyali"><br>
+    <textarea id="signalText" placeholder="Sinyal detayı yaz..."></textarea><br>
 
-  <input id="signalTitle" placeholder="Başlık: Örn. ASELS Sinyali" style="padding:12px;width:350px;margin-bottom:10px;"><br>
-  <textarea id="signalText" placeholder="Sinyal detayı yaz..." style="padding:12px;width:350px;height:120px;"></textarea><br>
+    <button onclick="sendSignal()">Sinyali Yayınla</button>
+    <button class="danger" onclick="clearSignal()">Sinyali Temizle</button>
 
-  <button onclick="sendSignal()" style="margin-top:10px;">Sinyali Yayınla</button>
-  <button onclick="clearSignal()" style="margin-top:10px;">Sinyali Temizle</button>
+    <h3>Aktif Sinyal</h3>
+    <div id="activeSignal" class="item"></div>
+  </div>
 
-  <h3>Aktif Sinyal</h3>
-  <div id="activeSignal" style="padding:15px;background:#111;border-radius:12px;max-width:420px;"></div>
+  <div class="section">
+    <h3>🚀 TAVAN ADAYI Yayınla</h3>
+
+    <input id="ceilingStock" placeholder="Hisse kodu: Örn. EKOS"><br>
+    <input id="ceilingPotential" placeholder="Potansiyel: Örn. %10"><br>
+    <textarea id="ceilingNote" placeholder="Açıklama: Örn. Tavan takibi yapılacak."></textarea><br>
+
+    <button onclick="sendCeilingCandidate()">Tavan Adayını Yayınla</button>
+    <button class="danger" onclick="clearCeilingCandidate()">Tavan Adayını Temizle</button>
+
+    <h3>Aktif Tavan Adayı</h3>
+    <div id="activeCeilingCandidate" class="item"></div>
+  </div>
+
+  <div class="section">
+    <h3>📰 Haber Ekle</h3>
+
+    <input id="newsTitle" placeholder="Haber başlığı"><br>
+    <textarea id="newsText" placeholder="Haber metni"></textarea><br>
+
+    <button onclick="addNews()">Haberi Ekle</button>
+    <button class="danger" onclick="clearNews()">Tüm Haberleri Temizle</button>
+
+    <h3>Haber Listesi</h3>
+    <div id="newsList"></div>
+  </div>
+
+  <div class="section">
+    <h3>⭐ Özel Listeye Hisse Ekle</h3>
+
+    <input id="specialStock" placeholder="Hisse kodu: Örn. THYAO"><br>
+    <textarea id="specialNote" placeholder="Not: Örn. Güçlü alıcı bölgesi takip ediliyor."></textarea><br>
+
+    <button onclick="addSpecialStock()">Özel Listeye Ekle</button>
+    <button class="danger" onclick="clearSpecialList()">Tüm Listeyi Temizle</button>
+
+    <h3>Özel Liste</h3>
+    <div id="specialList"></div>
+  </div>
+
+  <div class="section">
+    <h3>💰 Bugünün Karı Gir</h3>
+
+    <input id="profitTitle" placeholder="Başlık: Örn. Bugünün Karı"><br>
+    <input id="profitRate" placeholder="Kâr oranı: Örn. +%7.45"><br>
+    <textarea id="profitText" placeholder="Açıklama: Örn. 3 işlemden 2'si kâr aldı."></textarea><br>
+
+    <button onclick="sendTodayProfit()">Bugünün Karını Yayınla</button>
+    <button class="danger" onclick="clearTodayProfit()">Bugünün Karını Temizle</button>
+
+    <h3>Aktif Bugünün Karı</h3>
+    <div id="activeProfit" class="item"></div>
+  </div>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -44,6 +186,10 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+
+    function nowTR() {
+      return new Date().toLocaleString("tr-TR");
+    }
 
     function addVip() {
       const id = document.getElementById("vipId").value.trim();
@@ -70,12 +216,16 @@
 
       Object.keys(data).forEach(id => {
         list.innerHTML += `
-          <div style="margin:10px 0;padding:12px;background:#111;border-radius:10px;max-width:420px;">
-            ${id}
-            <button onclick="deleteVip('${id}')" style="margin-left:20px;">Sil</button>
+          <div class="item">
+            <b>${id}</b>
+            <button class="danger" onclick="deleteVip('${id}')" style="margin-left:20px;">Sil</button>
           </div>
         `;
       });
+
+      if (!Object.keys(data).length) {
+        list.innerHTML = `<div class="muted">VIP kullanıcı yok.</div>`;
+      }
     });
 
     function sendSignal() {
@@ -88,9 +238,9 @@
       }
 
       db.ref("liveSignal").set({
-        title: title,
-        text: text,
-        time: new Date().toLocaleString("tr-TR"),
+        title,
+        text,
+        time: nowTR(),
         active: true
       });
 
@@ -98,10 +248,7 @@
     }
 
     function clearSignal() {
-      db.ref("liveSignal").set({
-        active: false
-      });
-
+      db.ref("liveSignal").set({ active: false });
       alert("Sinyal temizlendi");
     }
 
@@ -117,7 +264,197 @@
       box.innerHTML = `
         <b>${signal.title}</b><br><br>
         ${signal.text}<br><br>
-        <small>${signal.time}</small>
+        <small class="muted">${signal.time}</small>
+      `;
+    });
+
+    function sendCeilingCandidate() {
+      const stock = document.getElementById("ceilingStock").value.trim().toUpperCase();
+      const potential = document.getElementById("ceilingPotential").value.trim();
+      const note = document.getElementById("ceilingNote").value.trim();
+
+      if (!stock || !potential || !note) {
+        alert("Hisse, potansiyel ve açıklama yaz");
+        return;
+      }
+
+      db.ref("ceilingCandidate").set({
+        stock,
+        potential,
+        note,
+        time: nowTR(),
+        active: true
+      });
+
+      alert("Tavan adayı yayınlandı");
+    }
+
+    function clearCeilingCandidate() {
+      db.ref("ceilingCandidate").set({ active: false });
+      alert("Tavan adayı temizlendi");
+    }
+
+    db.ref("ceilingCandidate").on("value", snapshot => {
+      const data = snapshot.val();
+      const box = document.getElementById("activeCeilingCandidate");
+
+      if (!data || !data.active) {
+        box.innerHTML = "Aktif tavan adayı yok.";
+        return;
+      }
+
+      box.innerHTML = `
+        <b>🚀 ${data.stock}</b><br>
+        Potansiyel: ${data.potential}<br><br>
+        ${data.note}<br><br>
+        <small class="muted">${data.time}</small>
+      `;
+    });
+
+    function addNews() {
+      const title = document.getElementById("newsTitle").value.trim();
+      const text = document.getElementById("newsText").value.trim();
+
+      if (!title || !text) {
+        alert("Haber başlığı ve haber metni yaz");
+        return;
+      }
+
+      db.ref("news").push({
+        title,
+        text,
+        time: nowTR()
+      });
+
+      document.getElementById("newsTitle").value = "";
+      document.getElementById("newsText").value = "";
+
+      alert("Haber eklendi");
+    }
+
+    function deleteNews(id) {
+      db.ref("news/" + id).remove();
+    }
+
+    function clearNews() {
+      db.ref("news").remove();
+      alert("Haberler temizlendi");
+    }
+
+    db.ref("news").on("value", snapshot => {
+      const data = snapshot.val() || {};
+      const list = document.getElementById("newsList");
+
+      list.innerHTML = "";
+
+      Object.entries(data).reverse().forEach(([id, news]) => {
+        list.innerHTML += `
+          <div class="item">
+            <b>${news.title}</b><br><br>
+            ${news.text}<br><br>
+            <small class="muted">${news.time}</small><br>
+            <button class="danger" onclick="deleteNews('${id}')">Sil</button>
+          </div>
+        `;
+      });
+
+      if (!Object.keys(data).length) {
+        list.innerHTML = `<div class="muted">Haber yok.</div>`;
+      }
+    });
+
+    function addSpecialStock() {
+      const stock = document.getElementById("specialStock").value.trim().toUpperCase();
+      const note = document.getElementById("specialNote").value.trim();
+
+      if (!stock || !note) {
+        alert("Hisse kodu ve not yaz");
+        return;
+      }
+
+      db.ref("specialList").push({
+        stock,
+        note,
+        time: nowTR()
+      });
+
+      document.getElementById("specialStock").value = "";
+      document.getElementById("specialNote").value = "";
+
+      alert("Özel listeye eklendi");
+    }
+
+    function deleteSpecialStock(id) {
+      db.ref("specialList/" + id).remove();
+    }
+
+    function clearSpecialList() {
+      db.ref("specialList").remove();
+      alert("Özel liste temizlendi");
+    }
+
+    db.ref("specialList").on("value", snapshot => {
+      const data = snapshot.val() || {};
+      const list = document.getElementById("specialList");
+
+      list.innerHTML = "";
+
+      Object.entries(data).reverse().forEach(([id, item]) => {
+        list.innerHTML += `
+          <div class="item">
+            <b>⭐ ${item.stock}</b><br><br>
+            ${item.note}<br><br>
+            <small class="muted">${item.time}</small><br>
+            <button class="danger" onclick="deleteSpecialStock('${id}')">Sil</button>
+          </div>
+        `;
+      });
+
+      if (!Object.keys(data).length) {
+        list.innerHTML = `<div class="muted">Özel liste boş.</div>`;
+      }
+    });
+
+    function sendTodayProfit() {
+      const title = document.getElementById("profitTitle").value.trim();
+      const rate = document.getElementById("profitRate").value.trim();
+      const text = document.getElementById("profitText").value.trim();
+
+      if (!title || !rate || !text) {
+        alert("Başlık, kâr oranı ve açıklama yaz");
+        return;
+      }
+
+      db.ref("todayProfit").set({
+        title,
+        rate,
+        text,
+        time: nowTR(),
+        active: true
+      });
+
+      alert("Bugünün karı yayınlandı");
+    }
+
+    function clearTodayProfit() {
+      db.ref("todayProfit").set({ active: false });
+      alert("Bugünün karı temizlendi");
+    }
+
+    db.ref("todayProfit").on("value", snapshot => {
+      const data = snapshot.val();
+      const box = document.getElementById("activeProfit");
+
+      if (!data || !data.active) {
+        box.innerHTML = "Aktif kar verisi yok.";
+        return;
+      }
+
+      box.innerHTML = `
+        <b>${data.title}</b><br>
+        <span style="color:#00e0a4;font-size:24px;font-weight:bold;">${data.rate}</span><br><br>
+        ${data.text}<br><br>
+        <small class="muted">${data.time}</small>
       `;
     });
   </script>

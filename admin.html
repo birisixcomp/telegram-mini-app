@@ -15,6 +15,19 @@
   <h3>VIP Listesi</h3>
   <div id="vipList"></div>
 
+  <hr style="margin:35px 0;border-color:#222;">
+
+  <h3>Terminale Anlık Sinyal Gönder</h3>
+
+  <input id="signalTitle" placeholder="Başlık: Örn. ASELS Sinyali" style="padding:12px;width:350px;margin-bottom:10px;"><br>
+  <textarea id="signalText" placeholder="Sinyal detayı yaz..." style="padding:12px;width:350px;height:120px;"></textarea><br>
+
+  <button onclick="sendSignal()" style="margin-top:10px;">Sinyali Yayınla</button>
+  <button onclick="clearSignal()" style="margin-top:10px;">Sinyali Temizle</button>
+
+  <h3>Aktif Sinyal</h3>
+  <div id="activeSignal" style="padding:15px;background:#111;border-radius:12px;max-width:420px;"></div>
+
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
@@ -57,12 +70,55 @@
 
       Object.keys(data).forEach(id => {
         list.innerHTML += `
-          <div style="margin:10px 0;padding:12px;background:#111;border-radius:10px;">
+          <div style="margin:10px 0;padding:12px;background:#111;border-radius:10px;max-width:420px;">
             ${id}
             <button onclick="deleteVip('${id}')" style="margin-left:20px;">Sil</button>
           </div>
         `;
       });
+    });
+
+    function sendSignal() {
+      const title = document.getElementById("signalTitle").value.trim();
+      const text = document.getElementById("signalText").value.trim();
+
+      if (!title || !text) {
+        alert("Başlık ve sinyal detayı yaz");
+        return;
+      }
+
+      db.ref("liveSignal").set({
+        title: title,
+        text: text,
+        time: new Date().toLocaleString("tr-TR"),
+        active: true
+      });
+
+      alert("Sinyal terminale gönderildi");
+    }
+
+    function clearSignal() {
+      db.ref("liveSignal").set({
+        active: false
+      });
+
+      alert("Sinyal temizlendi");
+    }
+
+    db.ref("liveSignal").on("value", snapshot => {
+      const signal = snapshot.val();
+      const box = document.getElementById("activeSignal");
+
+      if (!signal || !signal.active) {
+        box.innerHTML = "Aktif sinyal yok.";
+        return;
+      }
+
+      box.innerHTML = `
+        <b>${signal.title}</b><br><br>
+        ${signal.text}<br><br>
+        <small>${signal.time}</small>
+      `;
     });
   </script>
 

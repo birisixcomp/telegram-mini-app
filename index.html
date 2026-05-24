@@ -143,11 +143,39 @@
     <div class="nav">▣<br>Fon</div>
   </div>
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-    tg.ready();
-  </script>
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.expand();
+  tg.ready();
+
+  async function getMarketData() {
+    try {
+      const url = "https://query1.finance.yahoo.com/v8/finance/chart/XU100.IS";
+      const response = await fetch(url);
+      const data = await response.json();
+
+      const result = data.chart.result[0];
+      const meta = result.meta;
+
+      const price = meta.regularMarketPrice;
+      const previousClose = meta.previousClose;
+      const change = price - previousClose;
+      const percent = (change / previousClose) * 100;
+
+      document.querySelector(".box:nth-child(1) strong").innerText =
+        price.toLocaleString("tr-TR");
+
+      document.querySelector(".box:nth-child(1) span").innerText =
+        (percent >= 0 ? "+" : "") + percent.toFixed(2) + "%";
+
+    } catch (error) {
+      console.log("Veri alınamadı:", error);
+    }
+  }
+
+  getMarketData();
+  setInterval(getMarketData, 60000);
+</script>
 
 </body>
 </html>

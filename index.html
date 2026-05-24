@@ -270,81 +270,146 @@
     <div class="nav">▣<br>Fon</div>
   </div>
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-    tg.ready();
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-    const VIP_USERS = [
-      7724019785
-    ];
+<script>
+const tg = window.Telegram.WebApp;
+tg.expand();
+tg.ready();
 
-    const user = window.Telegram.WebApp.initDataUnsafe.user;
+const firebaseConfig = {
+  apiKey: "AIzaSyALt8zDibjQy07ImqA3EepJbnIiQa1HmDk",
+  authDomain: "halkaarz-terminal.firebaseapp.com",
+  databaseURL: "https://halkaarz-terminal-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "halkaarz-terminal",
+  storageBucket: "halkaarz-terminal.firebasestorage.app",
+  messagingSenderId: "703690716408",
+  appId: "1:703690716408:web:69c93387687726f0aab70d"
+};
 
-    if (!user || !VIP_USERS.includes(user.id)) {
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.database();
+
+const user = tg.initDataUnsafe.user;
+
+if (!user) {
+  document.body.innerHTML = `
+    <div style="
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:#050505;
+      color:white;
+      font-size:22px;
+      font-family:Arial;
+    ">
+      Telegram içinden aç.
+    </div>
+  `;
+}
+else {
+
+  const userId = String(user.id);
+
+  db.ref("vipUsers/" + userId).once("value")
+  .then(snapshot => {
+
+    if (!snapshot.exists()) {
+
       document.body.innerHTML = `
         <div style="
-          min-height:100vh;
+          height:100vh;
           display:flex;
-          align-items:center;
+          flex-direction:column;
           justify-content:center;
+          align-items:center;
           background:#050505;
           color:white;
-          font-family:Inter,Arial;
+          font-family:Arial;
           text-align:center;
-          padding:25px;
+          padding:30px;
         ">
-          <div style="
-            max-width:420px;
-            background:rgba(17,17,17,0.9);
-            border:1px solid rgba(255,255,255,0.08);
-            border-radius:24px;
-            padding:30px;
-            box-shadow:0 0 40px rgba(0,255,180,0.08);
+
+          <h1 style="font-size:34px;">⛔ VIP Gerekli</h1>
+
+          <p style="
+            color:#999;
+            max-width:400px;
+            line-height:1.6;
+            margin-top:10px;
           ">
-            <h2>🔒 VIP Erişim Gerekli</h2>
-            <p style="color:#aaa;line-height:1.6;">
-              Bu terminal sadece VIP üyeler için aktiftir.
-            </p>
-            <p style="color:#55e0e0;font-weight:800;">
-              Telegram ID: ${user ? user.id : "Bilinmiyor"}
-            </p>
-            <p style="color:#777;font-size:13px;">
-              Erişim almak için yöneticiyle iletişime geç.
-            </p>
-          </div>
+            Bu terminal sadece VIP üyeler içindir.
+          </p>
+
+          <a href="https://t.me/senin_grubun"
+             style="
+               margin-top:25px;
+               background:#00c896;
+               color:black;
+               text-decoration:none;
+               padding:15px 30px;
+               border-radius:14px;
+               font-weight:bold;
+             ">
+             VIP Satın Al
+          </a>
+
         </div>
       `;
-      throw new Error("VIP erişim yok");
+
+      return;
     }
 
-    async function getMarketData() {
-      try {
-        const url = "https://query1.finance.yahoo.com/v8/finance/chart/XU100.IS";
-        const response = await fetch(url);
-        const data = await response.json();
+    startTerminal();
 
-        const result = data.chart.result[0];
-        const meta = result.meta;
+  });
 
-        const price = meta.regularMarketPrice;
-        const previousClose = meta.previousClose;
-        const change = price - previousClose;
-        const percent = (change / previousClose) * 100;
+}
 
-        document.querySelector(".box:nth-child(1) strong").innerText =
-          price.toLocaleString("tr-TR");
+function startTerminal() {
 
-        document.querySelector(".box:nth-child(1) span").innerText =
-          (percent >= 0 ? "+" : "") + percent.toFixed(2) + "%";
+  async function getMarketData() {
+    try {
 
-      } catch (error) {
-        console.log("Veri alınamadı:", error);
-      }
+      const url = "https://query1.finance.yahoo.com/v8/finance/chart/XU100.IS";
+
+      const response = await fetch(url);
+
+      const data = await response.json();
+
+      const result = data.chart.result[0];
+
+      const meta = result.meta;
+
+      const price = meta.regularMarketPrice;
+
+      const previousClose = meta.previousClose;
+
+      const change = price - previousClose;
+
+      const percent = (change / previousClose) * 100;
+
+      document.querySelector(".box:nth-child(1) strong").innerText =
+        price.toLocaleString("tr-TR");
+
+      document.querySelector(".box:nth-child(1) span").innerText =
+        (percent >= 0 ? "+" : "") + percent.toFixed(2) + "%";
+
+    } catch (error) {
+
+      console.log(error);
+
     }
+  }
 
-    getMarketData();
-    setInterval(getMarketData, 60000);
-  </script>
+  getMarketData();
+
+  setInterval(getMarketData, 60000);
+
+}
+</script>
 </body>
 </html>

@@ -12,9 +12,7 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -276,6 +274,49 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
     tg.ready();
+
+    const VIP_USERS = [
+      123456789
+    ];
+
+    const user = window.Telegram.WebApp.initDataUnsafe.user;
+
+    if (!user || !VIP_USERS.includes(user.id)) {
+      document.body.innerHTML = `
+        <div style="
+          min-height:100vh;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          background:#050505;
+          color:white;
+          font-family:Inter,Arial;
+          text-align:center;
+          padding:25px;
+        ">
+          <div style="
+            max-width:420px;
+            background:rgba(17,17,17,0.9);
+            border:1px solid rgba(255,255,255,0.08);
+            border-radius:24px;
+            padding:30px;
+            box-shadow:0 0 40px rgba(0,255,180,0.08);
+          ">
+            <h2>🔒 VIP Erişim Gerekli</h2>
+            <p style="color:#aaa;line-height:1.6;">
+              Bu terminal sadece VIP üyeler için aktiftir.
+            </p>
+            <p style="color:#55e0e0;font-weight:800;">
+              Telegram ID: ${user ? user.id : "Bilinmiyor"}
+            </p>
+            <p style="color:#777;font-size:13px;">
+              Erişim almak için yöneticiyle iletişime geç.
+            </p>
+          </div>
+        </div>
+      `;
+      throw new Error("VIP erişim yok");
+    }
 
     async function getMarketData() {
       try {

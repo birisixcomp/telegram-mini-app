@@ -126,6 +126,43 @@
       font-weight: 500;
     }
 
+    .live-signal {
+      display: none;
+      background: rgba(0,200,150,0.08);
+      border: 1px solid rgba(0,224,164,0.25);
+      border-radius: 20px;
+      padding: 18px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 35px rgba(0,224,164,0.08);
+      animation: signalGlow 2s infinite;
+    }
+
+    .live-signal-label {
+      color: #00e0a4;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .live-signal h3 {
+      margin: 0 0 10px 0;
+      font-size: 22px;
+    }
+
+    .live-signal p {
+      color: #ccc;
+      line-height: 1.5;
+      margin: 0;
+      white-space: pre-line;
+    }
+
+    .live-signal small {
+      display: block;
+      color: #777;
+      margin-top: 12px;
+    }
+
     .empty {
       text-align: center;
       margin-top: 110px;
@@ -225,6 +262,12 @@
       from { background-position: 0 0; }
       to { background-position: 40px 40px; }
     }
+
+    @keyframes signalGlow {
+      0% { box-shadow: 0 0 20px rgba(0,224,164,0.06); }
+      50% { box-shadow: 0 0 45px rgba(0,224,164,0.16); }
+      100% { box-shadow: 0 0 20px rgba(0,224,164,0.06); }
+    }
   </style>
 </head>
 
@@ -254,6 +297,13 @@
       </div>
     </div>
 
+    <div id="liveSignalBox" class="live-signal">
+      <div class="live-signal-label">📡 CANLI SİNYAL</div>
+      <h3 id="liveSignalTitle"></h3>
+      <p id="liveSignalText"></p>
+      <small id="liveSignalTime"></small>
+    </div>
+
     <div class="empty">
       <div class="star">☆</div>
       <h3>Favoriler listesi boş</h3>
@@ -270,146 +320,148 @@
     <div class="nav">▣<br>Fon</div>
   </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-<script>
-const tg = window.Telegram.WebApp;
-tg.expand();
-tg.ready();
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.ready();
 
-const firebaseConfig = {
-  apiKey: "AIzaSyALt8zDibjQy07ImqA3EepJbnIiQa1HmDk",
-  authDomain: "halkaarz-terminal.firebaseapp.com",
-  databaseURL: "https://halkaarz-terminal-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "halkaarz-terminal",
-  storageBucket: "halkaarz-terminal.firebasestorage.app",
-  messagingSenderId: "703690716408",
-  appId: "1:703690716408:web:69c93387687726f0aab70d"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyALt8zDibjQy07ImqA3EepJbnIiQa1HmDk",
+      authDomain: "halkaarz-terminal.firebaseapp.com",
+      databaseURL: "https://halkaarz-terminal-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "halkaarz-terminal",
+      storageBucket: "halkaarz-terminal.firebasestorage.app",
+      messagingSenderId: "703690716408",
+      appId: "1:703690716408:web:69c93387687726f0aab70d"
+    };
 
-firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-const db = firebase.database();
+    const user = tg.initDataUnsafe.user;
 
-const user = tg.initDataUnsafe.user;
-
-if (!user) {
-  document.body.innerHTML = `
-    <div style="
-      height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      background:#050505;
-      color:white;
-      font-size:22px;
-      font-family:Arial;
-    ">
-      Telegram içinden aç.
-    </div>
-  `;
-}
-else {
-
-  const userId = String(user.id);
-
-  db.ref("vipUsers/" + userId).once("value")
-  .then(snapshot => {
-
-    if (!snapshot.exists()) {
-
+    if (!user) {
       document.body.innerHTML = `
         <div style="
           height:100vh;
           display:flex;
-          flex-direction:column;
           justify-content:center;
           align-items:center;
           background:#050505;
           color:white;
+          font-size:22px;
           font-family:Arial;
           text-align:center;
           padding:30px;
         ">
-
-          <h1 style="font-size:34px;">⛔ VIP Gerekli</h1>
-
-          <p style="
-            color:#999;
-            max-width:400px;
-            line-height:1.6;
-            margin-top:10px;
-          ">
-            Bu terminal sadece VIP üyeler içindir.
-          </p>
-
-          <a href="https://t.me/senin_grubun"
-             style="
-               margin-top:25px;
-               background:#00c896;
-               color:black;
-               text-decoration:none;
-               padding:15px 30px;
-               border-radius:14px;
-               font-weight:bold;
-             ">
-             VIP Satın Al
-          </a>
-
+          Telegram içinden aç.
         </div>
       `;
+    } else {
+      const userId = String(user.id);
 
-      return;
+      db.ref("vipUsers/" + userId).once("value")
+        .then(snapshot => {
+          if (!snapshot.exists()) {
+            document.body.innerHTML = `
+              <div style="
+                height:100vh;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                background:#050505;
+                color:white;
+                font-family:Arial;
+                text-align:center;
+                padding:30px;
+              ">
+                <h1 style="font-size:34px;">⛔ VIP Gerekli</h1>
+
+                <p style="
+                  color:#999;
+                  max-width:400px;
+                  line-height:1.6;
+                  margin-top:10px;
+                ">
+                  Bu terminal sadece VIP üyeler içindir.
+                </p>
+
+                <a href="https://t.me/senin_grubun"
+                   style="
+                     margin-top:25px;
+                     background:#00c896;
+                     color:black;
+                     text-decoration:none;
+                     padding:15px 30px;
+                     border-radius:14px;
+                     font-weight:bold;
+                   ">
+                   VIP Satın Al
+                </a>
+              </div>
+            `;
+            return;
+          }
+
+          startTerminal();
+          listenLiveSignal();
+        });
     }
 
-    startTerminal();
+    function startTerminal() {
+      async function getMarketData() {
+        try {
+          const url = "https://query1.finance.yahoo.com/v8/finance/chart/XU100.IS";
+          const response = await fetch(url);
+          const data = await response.json();
 
-  });
+          const result = data.chart.result[0];
+          const meta = result.meta;
 
-}
+          const price = meta.regularMarketPrice;
+          const previousClose = meta.previousClose;
+          const change = price - previousClose;
+          const percent = (change / previousClose) * 100;
 
-function startTerminal() {
+          document.querySelector(".box:nth-child(1) strong").innerText =
+            price.toLocaleString("tr-TR");
 
-  async function getMarketData() {
-    try {
+          document.querySelector(".box:nth-child(1) span").innerText =
+            (percent >= 0 ? "+" : "") + percent.toFixed(2) + "%";
 
-      const url = "https://query1.finance.yahoo.com/v8/finance/chart/XU100.IS";
+        } catch (error) {
+          console.log(error);
+        }
+      }
 
-      const response = await fetch(url);
-
-      const data = await response.json();
-
-      const result = data.chart.result[0];
-
-      const meta = result.meta;
-
-      const price = meta.regularMarketPrice;
-
-      const previousClose = meta.previousClose;
-
-      const change = price - previousClose;
-
-      const percent = (change / previousClose) * 100;
-
-      document.querySelector(".box:nth-child(1) strong").innerText =
-        price.toLocaleString("tr-TR");
-
-      document.querySelector(".box:nth-child(1) span").innerText =
-        (percent >= 0 ? "+" : "") + percent.toFixed(2) + "%";
-
-    } catch (error) {
-
-      console.log(error);
-
+      getMarketData();
+      setInterval(getMarketData, 60000);
     }
-  }
 
-  getMarketData();
+    function listenLiveSignal() {
+      db.ref("liveSignal").on("value", snapshot => {
+        const signal = snapshot.val();
 
-  setInterval(getMarketData, 60000);
+        const box = document.getElementById("liveSignalBox");
+        const title = document.getElementById("liveSignalTitle");
+        const text = document.getElementById("liveSignalText");
+        const time = document.getElementById("liveSignalTime");
 
-}
-</script>
+        if (!signal || !signal.active) {
+          box.style.display = "none";
+          return;
+        }
+
+        title.innerText = signal.title || "";
+        text.innerText = signal.text || "";
+        time.innerText = signal.time || "";
+        box.style.display = "block";
+      });
+    }
+  </script>
 </body>
 </html>

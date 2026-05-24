@@ -1,1 +1,70 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+</head>
+<body style="background:#050505;color:white;font-family:Arial;padding:30px;">
 
+  <h1>Admin Panel</h1>
+
+  <h3>VIP Kullanıcı Ekle</h3>
+  <input id="vipId" placeholder="Telegram ID" style="padding:12px;width:250px;">
+  <button onclick="addVip()">VIP Ekle</button>
+
+  <h3>VIP Listesi</h3>
+  <div id="vipList"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyALt8zDibjQy07ImqA3EepJbnIiQa1HmDk",
+      authDomain: "halkaarz-terminal.firebaseapp.com",
+      databaseURL: "https://halkaarz-terminal-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "halkaarz-terminal",
+      storageBucket: "halkaarz-terminal.firebasestorage.app",
+      messagingSenderId: "703690716408",
+      appId: "1:703690716408:web:69c93387687726f0aab70d"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function addVip() {
+      const id = document.getElementById("vipId").value.trim();
+
+      if (!id) {
+        alert("Telegram ID yaz");
+        return;
+      }
+
+      db.ref("vipUsers/" + id).set(true);
+      document.getElementById("vipId").value = "";
+      alert("VIP eklendi");
+    }
+
+    function deleteVip(id) {
+      db.ref("vipUsers/" + id).remove();
+    }
+
+    db.ref("vipUsers").on("value", snapshot => {
+      const data = snapshot.val() || {};
+      const list = document.getElementById("vipList");
+
+      list.innerHTML = "";
+
+      Object.keys(data).forEach(id => {
+        list.innerHTML += `
+          <div style="margin:10px 0;padding:12px;background:#111;border-radius:10px;">
+            ${id}
+            <button onclick="deleteVip('${id}')" style="margin-left:20px;">Sil</button>
+          </div>
+        `;
+      });
+    });
+  </script>
+
+</body>
+</html>

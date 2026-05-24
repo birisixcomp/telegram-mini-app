@@ -80,7 +80,8 @@
       overflow: hidden;
     }
 
-    .market::before {
+    .market::before,
+    .stat-card::before {
       content: "";
       position: absolute;
       top: 0;
@@ -117,6 +118,43 @@
       color: #00e0a4;
       animation: pulse 2s infinite;
       font-weight: 500;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: rgba(17,17,17,0.88);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 22px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 0 30px rgba(0,255,180,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-title {
+      color: #888;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 2;
+      letter-spacing: 0.4px;
+    }
+
+    .stat-value {
+      font-size: 30px;
+      font-weight: 800;
+      color: white;
+      position: relative;
+      z-index: 2;
+      text-shadow: 0 0 15px rgba(255,255,255,0.15);
     }
 
     .live-signal, .card {
@@ -372,6 +410,18 @@
         </div>
       </div>
 
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-title">👥 GÜNCEL VIP ÜYE SAYISI</div>
+          <div class="stat-value" id="vipCount">0</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-title">💰 TOPLAM HACİM</div>
+          <div class="stat-value" id="totalVolume">0 ₺</div>
+        </div>
+      </div>
+
       <div id="ceilingCandidateBox" class="ceiling-card">
         <div class="rocket-bg">🚀</div>
         <div class="ceiling-label">🚀 TAVAN ADAYI</div>
@@ -471,6 +521,7 @@
           }
 
           startTerminal();
+          listenVipStats();
           listenLiveSignal();
           listenCeilingCandidate();
           listenNews();
@@ -515,6 +566,25 @@
 
       getMarketData();
       setInterval(getMarketData, 60000);
+    }
+
+    function listenVipStats() {
+      db.ref("vipUsers").on("value", snapshot => {
+        const data = snapshot.val() || {};
+        const count = Object.keys(data).length;
+        document.getElementById("vipCount").innerText = count;
+      });
+
+      db.ref("terminalStats").on("value", snapshot => {
+        const data = snapshot.val();
+
+        if (!data) {
+          document.getElementById("totalVolume").innerText = "0 ₺";
+          return;
+        }
+
+        document.getElementById("totalVolume").innerText = data.volume || "0 ₺";
+      });
     }
 
     function listenLiveSignal() {

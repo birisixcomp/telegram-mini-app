@@ -5,9 +5,7 @@
   <title>Admin Panel</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       background:#050505;
@@ -17,9 +15,7 @@
       margin:0;
     }
 
-    h1 {
-      margin-top:0;
-    }
+    h1 { margin-top:0; }
 
     h3 {
       margin-top:28px;
@@ -82,9 +78,30 @@
       font-size:13px;
     }
 
-    hr {
-      margin:35px 0;
-      border-color:#222;
+    .stat-preview {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:15px;
+      max-width:720px;
+    }
+
+    .stat-box {
+      background:#111;
+      border:1px solid #222;
+      border-radius:12px;
+      padding:16px;
+    }
+
+    .stat-box small {
+      color:#888;
+      display:block;
+      margin-bottom:8px;
+    }
+
+    .stat-box b {
+      font-size:24px;
+      color:#00e0a4;
     }
   </style>
 </head>
@@ -92,6 +109,29 @@
 <body>
 
   <h1>Admin Panel</h1>
+
+  <div class="section">
+    <h3>📊 Terminal İstatistikleri</h3>
+
+    <input id="vipCountInput" placeholder="Güncel VIP üye sayısı: Örn. 428"><br>
+    <input id="volumeInput" placeholder="Toplam hacim: Örn. 128.4M ₺"><br>
+
+    <button onclick="updateTerminalStats()">İstatistikleri Güncelle</button>
+
+    <h3>Aktif İstatistikler</h3>
+
+    <div class="stat-preview">
+      <div class="stat-box">
+        <small>GÜNCEL VIP ÜYE SAYISI</small>
+        <b id="activeVipCount">0</b>
+      </div>
+
+      <div class="stat-box">
+        <small>TOPLAM HACİM</small>
+        <b id="activeVolume">0 ₺</b>
+      </div>
+    </div>
+  </div>
 
   <div class="section">
     <h3>VIP Kullanıcı Ekle</h3>
@@ -190,6 +230,35 @@
     function nowTR() {
       return new Date().toLocaleString("tr-TR");
     }
+
+    function updateTerminalStats() {
+      const vipCount = document.getElementById("vipCountInput").value.trim();
+      const volume = document.getElementById("volumeInput").value.trim();
+
+      if (!vipCount && !volume) {
+        alert("VIP sayısı veya toplam hacim gir");
+        return;
+      }
+
+      const updateData = {};
+
+      if (vipCount) updateData.vipCount = vipCount;
+      if (volume) updateData.volume = volume;
+
+      db.ref("terminalStats").update(updateData);
+
+      alert("Terminal istatistikleri güncellendi");
+    }
+
+    db.ref("terminalStats").on("value", snapshot => {
+      const data = snapshot.val() || {};
+
+      document.getElementById("activeVipCount").innerText = data.vipCount || "0";
+      document.getElementById("activeVolume").innerText = data.volume || "0 ₺";
+
+      document.getElementById("vipCountInput").value = data.vipCount || "";
+      document.getElementById("volumeInput").value = data.volume || "";
+    });
 
     function addVip() {
       const id = document.getElementById("vipId").value.trim();

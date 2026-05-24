@@ -1,467 +1,377 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Veri Terminali</title>
+<!-- ANA SAYFA -->
+<div id="homePage">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
-
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top left, rgba(0,255,180,0.08), transparent 30%),
-        radial-gradient(circle at top right, rgba(0,140,255,0.08), transparent 30%),
-        #050505;
-      color: white;
-      font-family: 'Inter', sans-serif;
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background:
-        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-      background-size: 40px 40px;
-      opacity: 0.25;
-      pointer-events: none;
-      animation: gridMove 14s linear infinite;
-    }
-
-    .app {
-      padding: 20px;
-      padding-bottom: 110px;
-      position: relative;
-      z-index: 2;
-    }
-
-    .top {
-      background: rgba(17,17,17,0.88);
-      border-radius: 20px;
-      padding: 18px;
-      margin-bottom: 20px;
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.06);
-      box-shadow: 0 0 30px rgba(0,255,180,0.04);
-    }
-
-    .top h2 {
-      margin: 0;
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.4px;
-    }
-
-    .market {
-      display: flex;
-      justify-content: space-between;
-      background: rgba(21,21,21,0.78);
-      padding: 16px 10px;
-      border-radius: 18px;
-      margin-bottom: 20px;
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.05);
-      box-shadow:
-        0 0 20px rgba(0,255,180,0.05),
-        0 0 40px rgba(0,140,255,0.05);
-      transition: 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .market::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -80%;
-      width: 60%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-      animation: shine 4s infinite;
-    }
-
-    .market:hover {
-      transform: translateY(-2px);
-      box-shadow:
-        0 0 30px rgba(0,255,180,0.12),
-        0 0 60px rgba(0,140,255,0.12);
-    }
-
-    .box {
-      text-align: center;
-      width: 33%;
-      position: relative;
-      z-index: 2;
-    }
-
-    .box small {
-      color: #8b8b8b;
-      font-weight: 800;
-      font-size: 12px;
-      letter-spacing: 0.5px;
-    }
-
-    .box strong {
-      display: block;
-      font-size: 19px;
-      margin-top: 6px;
-      font-weight: 800;
-      text-shadow: 0 0 15px rgba(255,255,255,0.15);
-    }
-
-    .green {
-      color: #00e0a4;
-      animation: pulse 2s infinite;
-      font-weight: 500;
-    }
-
-    .live-signal {
-      display: none;
-      background: rgba(0,200,150,0.08);
-      border: 1px solid rgba(0,224,164,0.25);
-      border-radius: 20px;
-      padding: 18px;
-      margin-top: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 0 35px rgba(0,224,164,0.08);
-      animation: signalGlow 2s infinite;
-    }
-
-    .live-signal-label {
-      color: #00e0a4;
-      font-weight: 800;
-      margin-bottom: 8px;
-      letter-spacing: 0.5px;
-    }
-
-    .live-signal h3 {
-      margin: 0 0 10px 0;
-      font-size: 22px;
-    }
-
-    .live-signal p {
-      color: #ccc;
-      line-height: 1.5;
-      margin: 0;
-      white-space: pre-line;
-    }
-
-    .live-signal small {
-      display: block;
-      color: #777;
-      margin-top: 12px;
-    }
-
-    .empty {
-      text-align: center;
-      margin-top: 110px;
-      color: #777;
-    }
-
-    .empty .star {
-      font-size: 62px;
-      color: #222;
-      animation: floatStar 3s ease-in-out infinite;
-    }
-
-    .empty h3 {
-      color: #888;
-      font-size: 20px;
-      margin-bottom: 10px;
-    }
-
-    .empty p {
-      color: #666;
-      line-height: 1.5;
-    }
-
-    button {
-      background: rgba(17,17,17,0.9);
-      border: 1px solid rgba(85,224,224,0.28);
-      color: #55e0e0;
-      padding: 14px 25px;
-      border-radius: 16px;
-      font-size: 16px;
-      font-weight: 800;
-      margin-top: 20px;
-      cursor: pointer;
-      transition: 0.3s;
-      box-shadow: 0 0 20px rgba(85,224,224,0.06);
-    }
-
-    button:hover {
-      transform: scale(1.04);
-      box-shadow: 0 0 30px rgba(85,224,224,0.18);
-    }
-
-    .bottom {
-      position: fixed;
-      bottom: 15px;
-      left: 15px;
-      right: 15px;
-      background: rgba(9,9,9,0.82);
-      border: 1px solid rgba(255,255,255,0.05);
-      border-radius: 25px;
-      display: flex;
-      justify-content: space-around;
-      padding: 14px 5px;
-      backdrop-filter: blur(25px);
-      box-shadow: 0 0 20px rgba(255,255,255,0.03);
-      z-index: 10;
-    }
-
-    .nav {
-      color: #777;
-      font-size: 13px;
-      text-align: center;
-      width: 20%;
-      transition: 0.3s;
-    }
-
-    .nav.active {
-      color: white;
-      font-weight: 800;
-      text-shadow: 0 0 12px rgba(255,255,255,0.18);
-    }
-
-    .nav:hover {
-      color: #55e0e0;
-      transform: translateY(-2px);
-    }
-
-    @keyframes pulse {
-      0% { opacity: 0.55; }
-      50% { opacity: 1; }
-      100% { opacity: 0.55; }
-    }
-
-    @keyframes shine {
-      0% { left: -80%; }
-      55% { left: 120%; }
-      100% { left: 120%; }
-    }
-
-    @keyframes floatStar {
-      0% { transform: translateY(0); opacity: 0.45; }
-      50% { transform: translateY(-8px); opacity: 0.8; }
-      100% { transform: translateY(0); opacity: 0.45; }
-    }
-
-    @keyframes gridMove {
-      from { background-position: 0 0; }
-      to { background-position: 40px 40px; }
-    }
-
-    @keyframes signalGlow {
-      0% { box-shadow: 0 0 20px rgba(0,224,164,0.06); }
-      50% { box-shadow: 0 0 45px rgba(0,224,164,0.16); }
-      100% { box-shadow: 0 0 20px rgba(0,224,164,0.06); }
-    }
-  </style>
-</head>
-
-<body>
-  <div class="app">
-    <div class="top">
-      <h2>Merhaba Dostum! 🌤️</h2>
+  <div class="market">
+    <div class="box">
+      <small>BİST 100</small>
+      <strong>13.808,2</strong>
+      <span class="green">+4.89%</span>
     </div>
 
-    <div class="market">
-      <div class="box">
-        <small>BİST 100</small>
-        <strong>13.808,2</strong>
-        <span class="green">+4.89%</span>
-      </div>
-
-      <div class="box">
-        <small>BİST 30</small>
-        <strong>15.791,1</strong>
-        <span class="green">+4.91%</span>
-      </div>
-
-      <div class="box">
-        <small>VİOP</small>
-        <strong>16.115</strong>
-        <span class="green">+5.97%</span>
-      </div>
+    <div class="box">
+      <small>BİST 30</small>
+      <strong>15.791,1</strong>
+      <span class="green">+4.91%</span>
     </div>
 
-    <div id="liveSignalBox" class="live-signal">
-      <div class="live-signal-label">📡 CANLI SİNYAL</div>
-      <h3 id="liveSignalTitle"></h3>
-      <p id="liveSignalText"></p>
-      <small id="liveSignalTime"></small>
-    </div>
-
-    <div class="empty">
-      <div class="star">☆</div>
-      <h3>Favoriler listesi boş</h3>
-      <p>Takip etmek istediğin hisseleri<br>ekleyerek başla</p>
-      <button>+ Hisse Ekle</button>
+    <div class="box">
+      <small>VİOP</small>
+      <strong>16.115</strong>
+      <span class="green">+5.97%</span>
     </div>
   </div>
 
-  <div class="bottom">
-    <div class="nav active">🏠<br>Anasayfa</div>
-    <div class="nav">🏢<br>Kurumsal</div>
-    <div class="nav">•••<br>Diğer</div>
-    <div class="nav">◔<br>Portföy</div>
-    <div class="nav">▣<br>Fon</div>
-  </div>
+  <!-- TAVAN ADAYI -->
+  <div id="ceilingCandidateBox" style="
+    display:none;
+    margin-bottom:20px;
+    background:linear-gradient(135deg,#0f2b1f,#07160f);
+    border:1px solid rgba(0,255,170,0.25);
+    border-radius:22px;
+    padding:22px;
+    position:relative;
+    overflow:hidden;
+    animation:ceilingGlow 2s infinite;
+  ">
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <div style="
+      position:absolute;
+      top:-20px;
+      right:-20px;
+      font-size:90px;
+      opacity:0.08;
+    ">
+      🚀
+    </div>
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-    tg.ready();
+    <div style="
+      color:#00ffb3;
+      font-weight:800;
+      margin-bottom:8px;
+      letter-spacing:1px;
+    ">
+      🚀 TAVAN ADAYI
+    </div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyALt8zDibjQy07ImqA3EepJbnIiQa1HmDk",
-      authDomain: "halkaarz-terminal.firebaseapp.com",
-      databaseURL: "https://halkaarz-terminal-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "halkaarz-terminal",
-      storageBucket: "halkaarz-terminal.firebasestorage.app",
-      messagingSenderId: "703690716408",
-      appId: "1:703690716408:web:69c93387687726f0aab70d"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    const user = tg.initDataUnsafe.user;
-
-    if (!user) {
-      document.body.innerHTML = `
-        <div style="
-          height:100vh;
-          display:flex;
-          justify-content:center;
-          align-items:center;
-          background:#050505;
+    <h2 id="ceilingStock"
+        style="
+          margin:0;
+          font-size:34px;
           color:white;
-          font-size:22px;
-          font-family:Arial;
-          text-align:center;
-          padding:30px;
+          text-shadow:0 0 18px rgba(0,255,180,0.25);
         ">
-          Telegram içinden aç.
-        </div>
-      `;
-    } else {
-      const userId = String(user.id);
+    </h2>
 
-      db.ref("vipUsers/" + userId).once("value")
-        .then(snapshot => {
-          if (!snapshot.exists()) {
-            document.body.innerHTML = `
-              <div style="
-                height:100vh;
-                display:flex;
-                flex-direction:column;
-                justify-content:center;
-                align-items:center;
-                background:#050505;
-                color:white;
-                font-family:Arial;
-                text-align:center;
-                padding:30px;
-              ">
-                <h1 style="font-size:34px;">⛔ VIP Gerekli</h1>
+    <div id="ceilingPotential"
+         style="
+           margin-top:8px;
+           color:#00ffb3;
+           font-size:24px;
+           font-weight:bold;
+         ">
+    </div>
 
-                <p style="
-                  color:#999;
-                  max-width:400px;
-                  line-height:1.6;
-                  margin-top:10px;
-                ">
-                  Bu terminal sadece VIP üyeler içindir.
-                </p>
+    <p id="ceilingNote"
+       style="
+         margin-top:14px;
+         color:#ccc;
+         line-height:1.6;
+       ">
+    </p>
 
-                <a href="https://t.me/senin_grubun"
-                   style="
-                     margin-top:25px;
-                     background:#00c896;
-                     color:black;
-                     text-decoration:none;
-                     padding:15px 30px;
-                     border-radius:14px;
-                     font-weight:bold;
-                   ">
-                   VIP Satın Al
-                </a>
-              </div>
-            `;
-            return;
-          }
+    <small id="ceilingTime"
+           style="
+             display:block;
+             margin-top:10px;
+             color:#666;
+           ">
+    </small>
 
-          startTerminal();
-          listenLiveSignal();
-        });
-    }
+  </div>
 
-    function startTerminal() {
-      async function getMarketData() {
-        try {
-          const url = "https://query1.finance.yahoo.com/v8/finance/chart/XU100.IS";
-          const response = await fetch(url);
-          const data = await response.json();
+  <!-- CANLI SİNYAL -->
+  <div id="liveSignalBox" class="live-signal">
+    <div class="live-signal-label">📡 CANLI SİNYAL</div>
+    <h3 id="liveSignalTitle"></h3>
+    <p id="liveSignalText"></p>
+    <small id="liveSignalTime"></small>
+  </div>
 
-          const result = data.chart.result[0];
-          const meta = result.meta;
+</div>
 
-          const price = meta.regularMarketPrice;
-          const previousClose = meta.previousClose;
-          const change = price - previousClose;
-          const percent = (change / previousClose) * 100;
+<!-- HABERLER -->
+<div id="newsPage" style="display:none;">
 
-          document.querySelector(".box:nth-child(1) strong").innerText =
-            price.toLocaleString("tr-TR");
+  <h2 style="margin-bottom:18px;">📰 Haberler</h2>
 
-          document.querySelector(".box:nth-child(1) span").innerText =
-            (percent >= 0 ? "+" : "") + percent.toFixed(2) + "%";
+  <div id="newsContainer"></div>
 
-        } catch (error) {
-          console.log(error);
-        }
-      }
+</div>
 
-      getMarketData();
-      setInterval(getMarketData, 60000);
-    }
+<!-- ÖZEL LİSTE -->
+<div id="specialPage" style="display:none;">
 
-    function listenLiveSignal() {
-      db.ref("liveSignal").on("value", snapshot => {
-        const signal = snapshot.val();
+  <h2 style="margin-bottom:18px;">⭐ Özel Liste</h2>
 
-        const box = document.getElementById("liveSignalBox");
-        const title = document.getElementById("liveSignalTitle");
-        const text = document.getElementById("liveSignalText");
-        const time = document.getElementById("liveSignalTime");
+  <div id="specialContainer"></div>
 
-        if (!signal || !signal.active) {
-          box.style.display = "none";
-          return;
-        }
+</div>
 
-        title.innerText = signal.title || "";
-        text.innerText = signal.text || "";
-        time.innerText = signal.time || "";
-        box.style.display = "block";
-      });
-    }
-  </script>
-</body>
-</html>
+<!-- BUGÜNÜN KARI -->
+<div id="profitPage" style="display:none;">
+
+  <h2 style="margin-bottom:18px;">💰 Bugünün Karı</h2>
+
+  <div id="todayProfitBox"
+       style="
+         display:none;
+         background:rgba(0,200,150,0.08);
+         border:1px solid rgba(0,224,164,0.25);
+         border-radius:20px;
+         padding:22px;
+       ">
+
+    <h2 id="profitTitle"></h2>
+
+    <div id="profitRate"
+         style="
+           font-size:42px;
+           font-weight:bold;
+           color:#00e0a4;
+           margin:14px 0;
+         ">
+    </div>
+
+    <p id="profitText"
+       style="
+         color:#ccc;
+         line-height:1.6;
+       ">
+    </p>
+
+    <small id="profitTime"
+           style="
+             color:#777;
+           ">
+    </small>
+
+  </div>
+
+</div>
+
+<!-- ALT MENÜ -->
+<div class="bottom">
+
+  <div class="nav active"
+       onclick="showPage('home')"
+       id="nav-home">
+       🏠<br>Anasayfa
+  </div>
+
+  <div class="nav"
+       onclick="showPage('news')"
+       id="nav-news">
+       📰<br>Haberler
+  </div>
+
+  <div class="nav"
+       onclick="showPage('special')"
+       id="nav-special">
+       ⭐<br>Özel Liste
+  </div>
+
+  <div class="nav"
+       onclick="showPage('profit')"
+       id="nav-profit">
+       💰<br>Bugünün Karı
+  </div>
+
+</div>
+
+<script>
+
+function showPage(page) {
+
+  document.getElementById("homePage").style.display = "none";
+  document.getElementById("newsPage").style.display = "none";
+  document.getElementById("specialPage").style.display = "none";
+  document.getElementById("profitPage").style.display = "none";
+
+  document.querySelectorAll(".nav").forEach(nav => {
+    nav.classList.remove("active");
+  });
+
+  if(page === "home") {
+    document.getElementById("homePage").style.display = "block";
+    document.getElementById("nav-home").classList.add("active");
+  }
+
+  if(page === "news") {
+    document.getElementById("newsPage").style.display = "block";
+    document.getElementById("nav-news").classList.add("active");
+  }
+
+  if(page === "special") {
+    document.getElementById("specialPage").style.display = "block";
+    document.getElementById("nav-special").classList.add("active");
+  }
+
+  if(page === "profit") {
+    document.getElementById("profitPage").style.display = "block";
+    document.getElementById("nav-profit").classList.add("active");
+  }
+
+}
+
+/* TAVAN ADAYI */
+
+db.ref("ceilingCandidate").on("value", snapshot => {
+
+  const data = snapshot.val();
+
+  const box = document.getElementById("ceilingCandidateBox");
+
+  if(!data || !data.active) {
+    box.style.display = "none";
+    return;
+  }
+
+  document.getElementById("ceilingStock").innerText = data.stock || "";
+  document.getElementById("ceilingPotential").innerText = data.potential || "";
+  document.getElementById("ceilingNote").innerText = data.note || "";
+  document.getElementById("ceilingTime").innerText = data.time || "";
+
+  box.style.display = "block";
+
+});
+
+/* HABERLER */
+
+db.ref("news").on("value", snapshot => {
+
+  const data = snapshot.val() || {};
+
+  const container = document.getElementById("newsContainer");
+
+  container.innerHTML = "";
+
+  Object.values(data).reverse().forEach(news => {
+
+    container.innerHTML += `
+      <div style="
+        background:#111;
+        border:1px solid #222;
+        border-radius:18px;
+        padding:18px;
+        margin-bottom:16px;
+      ">
+
+        <h3 style="margin-top:0;">${news.title}</h3>
+
+        <p style="
+          color:#bbb;
+          line-height:1.6;
+        ">
+          ${news.text}
+        </p>
+
+        <small style="color:#666;">
+          ${news.time}
+        </small>
+
+      </div>
+    `;
+
+  });
+
+});
+
+/* ÖZEL LİSTE */
+
+db.ref("specialList").on("value", snapshot => {
+
+  const data = snapshot.val() || {};
+
+  const container = document.getElementById("specialContainer");
+
+  container.innerHTML = "";
+
+  Object.values(data).reverse().forEach(item => {
+
+    container.innerHTML += `
+      <div style="
+        background:#111;
+        border:1px solid #222;
+        border-radius:18px;
+        padding:18px;
+        margin-bottom:16px;
+      ">
+
+        <h2 style="
+          margin-top:0;
+          color:#00e0a4;
+        ">
+          ⭐ ${item.stock}
+        </h2>
+
+        <p style="
+          color:#bbb;
+          line-height:1.6;
+        ">
+          ${item.note}
+        </p>
+
+        <small style="color:#666;">
+          ${item.time}
+        </small>
+
+      </div>
+    `;
+
+  });
+
+});
+
+/* BUGÜNÜN KARI */
+
+db.ref("todayProfit").on("value", snapshot => {
+
+  const data = snapshot.val();
+
+  const box = document.getElementById("todayProfitBox");
+
+  if(!data || !data.active) {
+    box.style.display = "none";
+    return;
+  }
+
+  document.getElementById("profitTitle").innerText = data.title || "";
+  document.getElementById("profitRate").innerText = data.rate || "";
+  document.getElementById("profitText").innerText = data.text || "";
+  document.getElementById("profitTime").innerText = data.time || "";
+
+  box.style.display = "block";
+
+});
+
+</script>
+
+<style>
+
+@keyframes ceilingGlow {
+
+  0% {
+    box-shadow:0 0 18px rgba(0,255,170,0.08);
+  }
+
+  50% {
+    box-shadow:0 0 45px rgba(0,255,170,0.25);
+  }
+
+  100% {
+    box-shadow:0 0 18px rgba(0,255,170,0.08);
+  }
+
+}
+
+</style>

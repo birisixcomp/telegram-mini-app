@@ -569,20 +569,16 @@
     }
 
     function listenVipStats() {
-      db.ref("vipUsers").on("value", snapshot => {
-        const data = snapshot.val() || {};
-        const count = Object.keys(data).length;
-        document.getElementById("vipCount").innerText = count;
-      });
-
       db.ref("terminalStats").on("value", snapshot => {
         const data = snapshot.val();
 
         if (!data) {
+          document.getElementById("vipCount").innerText = "0";
           document.getElementById("totalVolume").innerText = "0 ₺";
           return;
         }
 
+        document.getElementById("vipCount").innerText = data.vipCount || "0";
         document.getElementById("totalVolume").innerText = data.volume || "0 ₺";
       });
     }

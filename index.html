@@ -2,28 +2,50 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Veri Terminali</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>HALKAARZ Terminal</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --bg: #08111f;
+      --card: rgba(255,255,255,0.105);
+      --card2: rgba(255,255,255,0.065);
+      --stroke: rgba(255,255,255,0.16);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,0.68);
+      --soft: rgba(255,255,255,0.42);
+      --green: #38ffd0;
+      --blue: #4aa3ff;
+      --danger: #ff5b7c;
+      --gold: #ffd76b;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: #07101e;
+      color: var(--text);
+      font-family: "Inter", sans-serif;
+      overflow-x: hidden;
+    }
 
     body {
-      margin: 0;
-      min-height: 100vh;
       background:
-        radial-gradient(circle at 10% 0%, rgba(0,255,180,0.16), transparent 32%),
-        radial-gradient(circle at 95% 10%, rgba(0,130,255,0.15), transparent 30%),
-        radial-gradient(circle at 50% 100%, rgba(0,255,120,0.06), transparent 35%),
-        #030506;
-      color: white;
-      font-family: 'Inter', sans-serif;
-      overflow-x: hidden;
+        radial-gradient(circle at 20% 0%, rgba(56,255,208,0.22), transparent 30%),
+        radial-gradient(circle at 90% 12%, rgba(74,163,255,0.26), transparent 34%),
+        radial-gradient(circle at 50% 100%, rgba(72,95,255,0.18), transparent 36%),
+        linear-gradient(145deg, #0a1830 0%, #050b14 55%, #061019 100%);
     }
 
     body::before {
@@ -31,565 +53,801 @@
       position: fixed;
       inset: 0;
       background:
-        linear-gradient(rgba(255,255,255,0.026) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.026) 1px, transparent 1px);
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
       background-size: 38px 38px;
-      opacity: 0.28;
+      opacity: .22;
       pointer-events: none;
-      animation: gridMove 14s linear infinite;
+      animation: gridMove 16s linear infinite;
+      z-index: 0;
     }
 
     body::after {
       content: "";
       position: fixed;
       inset: 0;
-      background: linear-gradient(180deg, transparent, rgba(0,0,0,0.45));
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.38));
       pointer-events: none;
+      z-index: 1;
     }
 
-    .app {
-      padding: 18px;
-      padding-bottom: 120px;
+    .shell {
       position: relative;
       z-index: 2;
       max-width: 760px;
       margin: 0 auto;
+      min-height: 100vh;
+      padding: 18px 16px 120px;
     }
 
-    .top {
-      background:
-        linear-gradient(135deg, rgba(255,255,255,0.11), rgba(255,255,255,0.025)),
-        rgba(8,12,13,0.88);
-      border-radius: 26px;
-      padding: 20px;
-      margin-bottom: 18px;
-      backdrop-filter: blur(24px);
-      border: 1px solid rgba(255,255,255,0.09);
-      box-shadow: 0 0 40px rgba(0,255,180,0.07), inset 0 1px 0 rgba(255,255,255,0.08);
+    .hero {
       position: relative;
       overflow: hidden;
+      min-height: 172px;
+      border-radius: 34px;
+      padding: 22px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04)),
+        rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 26px 80px rgba(0,0,0,0.36),
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        0 0 45px rgba(56,255,208,0.10);
+      backdrop-filter: blur(28px);
     }
 
-    .top::before {
+    .hero::before {
       content: "";
       position: absolute;
-      width: 160px;
-      height: 160px;
-      right: -60px;
-      top: -70px;
-      background: rgba(0,255,180,0.13);
-      filter: blur(28px);
+      width: 260px;
+      height: 260px;
+      right: -96px;
+      top: -118px;
       border-radius: 999px;
+      background: rgba(56,255,208,0.18);
+      filter: blur(22px);
     }
 
-    .top h2 {
-      margin: 0;
-      font-size: 23px;
-      font-weight: 900;
-      letter-spacing: -0.5px;
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.10) 45%, transparent 65%);
+      transform: translateX(-120%);
+      animation: shineHero 5.5s infinite;
+    }
+
+    .hero-top {
       position: relative;
       z-index: 2;
-    }
-
-    .top-sub {
-      margin-top: 8px;
-      color: #8d9a9a;
-      font-size: 13px;
-      font-weight: 600;
-      position: relative;
-      z-index: 2;
-    }
-
-    .market {
       display: flex;
       justify-content: space-between;
-      background:
-        linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.025)),
-        rgba(10,14,15,0.82);
-      padding: 16px 10px;
-      border-radius: 22px;
-      margin-bottom: 14px;
-      backdrop-filter: blur(24px);
-      border: 1px solid rgba(255,255,255,0.075);
-      box-shadow: 0 0 30px rgba(0,255,180,0.06), 0 18px 60px rgba(0,0,0,0.32);
-      position: relative;
-      overflow: hidden;
+      align-items: flex-start;
+      gap: 14px;
     }
 
-    .market::before,
-    .stat-card::before,
-    .card::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -80%;
-      width: 60%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-      animation: shine 4.2s infinite;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
-    .box {
-      text-align: center;
-      width: 33%;
+    .logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(56,255,208,0.28), rgba(74,163,255,0.20));
+      border: 1px solid rgba(255,255,255,0.2);
+      box-shadow: 0 0 28px rgba(56,255,208,0.18);
+      font-size: 22px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 23px;
+      letter-spacing: -0.7px;
+      line-height: 1.05;
+      font-weight: 900;
+    }
+
+    .brand p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .vip-pill {
       position: relative;
       z-index: 2;
-    }
-
-    .box small {
-      color: #7e8a8a;
-      font-weight: 900;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(56,255,208,0.12);
+      color: var(--green);
+      border: 1px solid rgba(56,255,208,0.26);
       font-size: 11px;
-      letter-spacing: 0.7px;
+      font-weight: 900;
+      white-space: nowrap;
     }
 
-    .box strong {
+    .hero-bottom {
+      position: relative;
+      z-index: 2;
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .hero-title {
+      font-size: 15px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .hero-value {
+      font-size: 34px;
+      line-height: 1;
+      letter-spacing: -1.4px;
+      font-weight: 900;
+    }
+
+    .hero-change {
+      margin-top: 8px;
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      color: var(--green);
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    .hero-mini {
+      background: rgba(255,255,255,0.09);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 22px;
+      padding: 14px;
+      backdrop-filter: blur(18px);
+    }
+
+    .hero-mini small {
       display: block;
-      font-size: 19px;
-      margin-top: 7px;
+      color: var(--soft);
+      font-size: 11px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .hero-mini b {
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .mini-change {
+      margin-top: 4px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 22px 2px 12px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 18px;
       font-weight: 900;
       letter-spacing: -0.4px;
-      text-shadow: 0 0 18px rgba(255,255,255,0.12);
     }
 
-    .green {
-      color: #00f0ae;
-      animation: pulse 2s infinite;
+    .section-title span {
+      color: var(--soft);
+      font-size: 12px;
       font-weight: 800;
-      font-size: 13px;
+    }
+
+    .market-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .glass-card {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.045)),
+        rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 25px;
+      box-shadow:
+        0 16px 50px rgba(0,0,0,0.24),
+        inset 0 1px 0 rgba(255,255,255,0.13);
+      backdrop-filter: blur(24px);
+    }
+
+    .glass-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.09) 45%, transparent 70%);
+      transform: translateX(-120%);
+      animation: cardShine 5s infinite;
+    }
+
+    .market-card {
+      padding: 15px 10px;
+      min-height: 98px;
+      text-align: center;
+    }
+
+    .market-card small {
+      position: relative;
+      z-index: 2;
+      display: block;
+      color: var(--soft);
+      font-size: 10px;
+      letter-spacing: .7px;
+      font-weight: 900;
+    }
+
+    .market-card strong {
+      position: relative;
+      z-index: 2;
+      display: block;
+      margin-top: 8px;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: -0.4px;
+    }
+
+    .market-card span {
+      position: relative;
+      z-index: 2;
+      display: block;
+      color: var(--green);
+      margin-top: 5px;
+      font-size: 12px;
+      font-weight: 900;
     }
 
     .stats-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 18px;
+      gap: 12px;
+      margin-top: 12px;
     }
 
     .stat-card {
-      background:
-        linear-gradient(145deg, rgba(0,224,164,0.095), rgba(255,255,255,0.025)),
-        rgba(10,14,15,0.84);
-      border: 1px solid rgba(255,255,255,0.075);
-      border-radius: 24px;
-      padding: 20px;
-      backdrop-filter: blur(24px);
-      box-shadow: 0 0 35px rgba(0,255,180,0.055), inset 0 1px 0 rgba(255,255,255,0.06);
-      position: relative;
-      overflow: hidden;
+      padding: 18px;
       min-height: 118px;
     }
 
-    .stat-title {
-      color: #8a9696;
+    .stat-card .icon {
+      position: relative;
+      z-index: 2;
+      width: 38px;
+      height: 38px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: rgba(56,255,208,0.12);
+      border: 1px solid rgba(56,255,208,0.22);
+      margin-bottom: 16px;
+      font-size: 18px;
+    }
+
+    .stat-card small {
+      position: relative;
+      z-index: 2;
+      display: block;
+      color: var(--muted);
       font-size: 11px;
       font-weight: 900;
-      margin-bottom: 13px;
-      position: relative;
-      z-index: 2;
-      letter-spacing: 0.45px;
       line-height: 1.35;
+      margin-bottom: 8px;
     }
 
-    .stat-value {
-      font-size: 31px;
-      font-weight: 900;
-      color: white;
+    .stat-card strong {
       position: relative;
       z-index: 2;
-      letter-spacing: -0.8px;
-      text-shadow: 0 0 18px rgba(255,255,255,0.16);
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: -1px;
     }
 
-    .live-signal, .card {
-      background:
-        linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.025)),
-        rgba(10,14,15,0.86);
-      border: 1px solid rgba(255,255,255,0.075);
-      border-radius: 24px;
-      padding: 19px;
-      margin-bottom: 16px;
-      box-shadow: 0 0 34px rgba(0,224,164,0.045), 0 14px 50px rgba(0,0,0,0.28);
-      backdrop-filter: blur(24px);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .live-signal {
+    .signal-card {
       display: none;
+      padding: 20px;
+      margin-top: 12px;
+      border-color: rgba(56,255,208,0.28);
       background:
-        linear-gradient(135deg, rgba(0,224,164,0.13), rgba(0,130,255,0.05)),
-        rgba(9,16,15,0.9);
-      border: 1px solid rgba(0,224,164,0.28);
-      animation: signalGlow 2s infinite;
+        radial-gradient(circle at top right, rgba(56,255,208,0.22), transparent 45%),
+        linear-gradient(145deg, rgba(56,255,208,0.12), rgba(255,255,255,0.045)),
+        rgba(255,255,255,0.06);
+      animation: glowPulse 2.5s infinite;
     }
 
-    .live-signal-label {
-      color: #00f0ae;
-      font-weight: 900;
-      margin-bottom: 9px;
-      letter-spacing: 0.7px;
-      font-size: 13px;
-    }
-
-    .live-signal h3, .card h3 {
-      margin: 0 0 10px 0;
-      font-size: 21px;
-      font-weight: 900;
-      letter-spacing: -0.4px;
+    .label {
       position: relative;
       z-index: 2;
+      display: inline-flex;
+      gap: 7px;
+      align-items: center;
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: rgba(56,255,208,0.12);
+      color: var(--green);
+      border: 1px solid rgba(56,255,208,0.22);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .5px;
+      margin-bottom: 13px;
     }
 
-    .live-signal p, .card p {
-      color: #c2cccc;
-      line-height: 1.55;
+    .signal-card h3,
+    .ceiling-card h3 {
+      position: relative;
+      z-index: 2;
+      margin: 0 0 10px;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -0.7px;
+    }
+
+    .signal-card p,
+    .ceiling-card p {
+      position: relative;
+      z-index: 2;
       margin: 0;
       white-space: pre-line;
-      position: relative;
-      z-index: 2;
+      color: rgba(255,255,255,0.78);
+      line-height: 1.55;
       font-size: 14px;
     }
 
-    .live-signal small, .card small {
-      display: block;
-      color: #697676;
-      margin-top: 12px;
+    .signal-card small,
+    .ceiling-card small {
       position: relative;
       z-index: 2;
+      display: block;
+      margin-top: 12px;
+      color: var(--soft);
       font-size: 12px;
+      font-weight: 700;
     }
 
     .ceiling-card {
       display: none;
-      margin-bottom: 18px;
+      padding: 22px;
+      margin-top: 12px;
+      border-color: rgba(255,215,107,0.35);
       background:
-        radial-gradient(circle at top right, rgba(0,255,170,0.20), transparent 35%),
-        linear-gradient(135deg, #0d2c1f, #06100d);
-      border: 1px solid rgba(0,255,170,0.30);
-      border-radius: 28px;
-      padding: 24px;
-      position: relative;
-      overflow: hidden;
-      animation: ceilingGlow 2s infinite;
-      box-shadow: 0 0 45px rgba(0,255,170,0.12);
+        radial-gradient(circle at top right, rgba(255,215,107,0.20), transparent 40%),
+        radial-gradient(circle at bottom left, rgba(56,255,208,0.12), transparent 45%),
+        rgba(255,255,255,0.07);
     }
 
-    .ceiling-card::before {
-      content: "";
+    .rocket {
       position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(0,255,170,0.10), transparent);
-      transform: translateX(-100%);
-      animation: ceilingShine 3s infinite;
-    }
-
-    .rocket-bg {
-      position: absolute;
-      top: -18px;
-      right: -20px;
-      font-size: 100px;
-      opacity: 0.10;
-      animation: rocketFloat 2.5s infinite ease-in-out;
-    }
-
-    .ceiling-label {
-      color: #00ffb3;
-      font-weight: 900;
-      margin-bottom: 10px;
-      letter-spacing: 1px;
-      position: relative;
-      z-index: 2;
-      font-size: 13px;
-    }
-
-    .ceiling-card h2 {
-      margin: 0;
-      font-size: 38px;
-      color: white;
-      font-weight: 900;
-      letter-spacing: -0.8px;
-      text-shadow: 0 0 22px rgba(0,255,180,0.32);
-      position: relative;
-      z-index: 2;
+      right: -14px;
+      top: -20px;
+      font-size: 108px;
+      opacity: .11;
+      animation: rocketFloat 3s ease-in-out infinite;
     }
 
     .ceiling-potential {
-      margin-top: 9px;
-      color: #00ffb3;
-      font-size: 25px;
-      font-weight: 900;
       position: relative;
       z-index: 2;
+      color: var(--gold);
+      font-size: 23px;
+      font-weight: 900;
+      margin-bottom: 12px;
     }
 
-    .ceiling-note {
-      margin-top: 15px;
-      color: #c9d4d1;
-      line-height: 1.6;
+    .page {
+      display: none;
+      animation: pageIn .25s ease;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .page-head {
+      margin: 4px 2px 16px;
+    }
+
+    .page-head h2 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: -0.9px;
+      font-weight: 900;
+    }
+
+    .page-head p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .news-list,
+    .list-stack {
+      display: grid;
+      gap: 13px;
+    }
+
+    .content-card {
+      padding: 18px;
+    }
+
+    .content-card h3 {
       position: relative;
       z-index: 2;
+      margin: 0 0 10px;
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: -0.35px;
+      font-weight: 900;
+    }
+
+    .content-card p {
+      position: relative;
+      z-index: 2;
+      margin: 0;
+      color: rgba(255,255,255,0.76);
+      line-height: 1.55;
       white-space: pre-line;
       font-size: 14px;
     }
 
-    .page-title {
-      margin: 0 0 18px 0;
-      font-size: 25px;
-      font-weight: 900;
-      letter-spacing: -0.5px;
+    .content-card small {
+      position: relative;
+      z-index: 2;
+      display: block;
+      margin-top: 13px;
+      color: var(--soft);
+      font-size: 12px;
+      font-weight: 800;
     }
 
     .empty-state {
+      margin-top: 70px;
       text-align: center;
-      margin-top: 80px;
-      color: #777;
+      color: var(--muted);
     }
 
     .empty-state .star {
       font-size: 62px;
-      color: #1d2424;
-      animation: floatStar 3s ease-in-out infinite;
+      opacity: .30;
+      animation: floatStar 3s infinite ease-in-out;
     }
 
     .vip-lock {
       text-align: center;
       margin-top: 45px;
-      background:
-        radial-gradient(circle at top, rgba(0,240,174,0.12), transparent 42%),
-        rgba(10,14,15,0.88);
-      border: 1px solid rgba(0,240,174,0.18);
-      border-radius: 28px;
       padding: 30px 22px;
-      box-shadow: 0 0 45px rgba(0,240,174,0.08);
+      border-radius: 32px;
+      background:
+        radial-gradient(circle at top, rgba(56,255,208,0.17), transparent 42%),
+        linear-gradient(145deg, rgba(255,255,255,0.13), rgba(255,255,255,0.04)),
+        rgba(255,255,255,0.06);
+      border: 1px solid rgba(56,255,208,0.23);
+      box-shadow: 0 20px 70px rgba(0,0,0,0.32), 0 0 50px rgba(56,255,208,0.10);
+      backdrop-filter: blur(24px);
     }
 
     .vip-lock h2 {
       margin: 0;
       font-size: 28px;
       font-weight: 900;
+      letter-spacing: -0.6px;
     }
 
     .vip-lock p {
-      color: #aab5b5;
+      margin: 14px 0 0;
+      color: var(--muted);
       line-height: 1.6;
-      margin: 15px 0 0 0;
       font-size: 14px;
+      font-weight: 600;
     }
 
     .vip-button {
       display: inline-block;
       margin-top: 22px;
-      background: linear-gradient(135deg, #00f0ae, #55e0e0);
-      color: #00110c;
-      padding: 14px 26px;
-      border-radius: 18px;
       text-decoration: none;
+      padding: 15px 26px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--green), var(--blue));
+      color: #00120d;
       font-weight: 900;
-      box-shadow: 0 0 28px rgba(0,240,174,0.18);
+      box-shadow: 0 0 32px rgba(56,255,208,0.22);
     }
 
     .popup-overlay {
-      display:none;
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,0.76);
-      z-index:9999;
-      align-items:center;
-      justify-content:center;
-      padding:25px;
-      backdrop-filter: blur(10px);
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      padding: 25px;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.70);
+      backdrop-filter: blur(12px);
     }
 
     .popup-card {
-      max-width:420px;
-      width:100%;
+      width: 100%;
+      max-width: 430px;
+      text-align: center;
+      padding: 28px;
+      border-radius: 32px;
       background:
-        linear-gradient(135deg, rgba(0,240,174,0.16), rgba(255,255,255,0.04)),
-        #07110e;
-      border:1px solid rgba(0,240,174,0.25);
-      border-radius:28px;
-      padding:28px;
-      box-shadow:0 0 55px rgba(0,240,174,0.20);
-      text-align:center;
+        radial-gradient(circle at top, rgba(56,255,208,0.18), transparent 45%),
+        linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.04)),
+        #08121c;
+      border: 1px solid rgba(56,255,208,0.22);
+      box-shadow: 0 25px 80px rgba(0,0,0,0.42), 0 0 52px rgba(56,255,208,0.16);
     }
 
     .popup-card h2 {
-      margin:0 0 12px 0;
-      font-size:26px;
-      font-weight:900;
+      margin: 0;
+      font-size: 26px;
+      font-weight: 900;
     }
 
     .popup-card p {
-      color:#c8d4d1;
-      line-height:1.6;
-      white-space:pre-line;
+      color: var(--muted);
+      line-height: 1.6;
+      white-space: pre-line;
     }
 
     .popup-card button {
-      margin-top:20px;
-      background:#00f0ae;
-      color:#00110c;
-      border:none;
-      padding:13px 26px;
-      border-radius:16px;
-      font-weight:900;
-      cursor:pointer;
+      border: 0;
+      margin-top: 12px;
+      padding: 14px 26px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--green), var(--blue));
+      color: #00120d;
+      font-weight: 900;
     }
 
-    .bottom {
+    .bottom-nav {
       position: fixed;
-      bottom: 14px;
+      z-index: 20;
       left: 14px;
       right: 14px;
+      bottom: 14px;
       max-width: 760px;
       margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 10px;
+      border-radius: 30px;
       background:
-        linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.025)),
-        rgba(5,8,9,0.88);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 28px;
-      display: flex;
-      justify-content: space-around;
-      padding: 13px 5px;
+        linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.045)),
+        rgba(8,14,22,0.82);
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow: 0 20px 70px rgba(0,0,0,0.44), 0 0 42px rgba(56,255,208,0.08);
       backdrop-filter: blur(28px);
-      box-shadow: 0 0 35px rgba(0,255,180,0.07), 0 20px 50px rgba(0,0,0,0.44);
-      z-index: 10;
     }
 
-    .nav {
-      color: #748080;
+    .nav-item {
+      border: 0;
+      background: transparent;
+      color: rgba(255,255,255,0.52);
+      border-radius: 22px;
+      padding: 9px 5px;
+      font-family: inherit;
       font-size: 11px;
-      text-align: center;
-      width: 25%;
-      transition: 0.3s;
-      cursor: pointer;
-      user-select: none;
-      font-weight: 800;
-      line-height: 1.35;
-    }
-
-    .nav.active {
-      color: white;
       font-weight: 900;
-      text-shadow: 0 0 14px rgba(255,255,255,0.22);
+      line-height: 1.35;
+      transition: .25s;
+    }
+
+    .nav-item.active {
+      color: #fff;
+      background: rgba(255,255,255,0.105);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 0 20px rgba(56,255,208,0.10);
       transform: translateY(-2px);
     }
 
-    .nav:hover {
-      color: #55e0e0;
-      transform: translateY(-2px);
-    }
-
-    .page {
-      display: none;
-      animation: pageFade 0.25s ease-in-out;
-    }
-
-    .page.active-page {
+    .nav-item span {
       display: block;
+      font-size: 17px;
+      margin-bottom: 3px;
     }
 
-    @keyframes pulse { 0% { opacity: 0.55; } 50% { opacity: 1; } 100% { opacity: 0.55; } }
-    @keyframes shine { 0% { left: -80%; } 55% { left: 120%; } 100% { left: 120%; } }
-    @keyframes floatStar { 0% { transform: translateY(0); opacity: 0.45; } 50% { transform: translateY(-8px); opacity: 0.8; } 100% { transform: translateY(0); opacity: 0.45; } }
-    @keyframes gridMove { from { background-position: 0 0; } to { background-position: 38px 38px; } }
-    @keyframes signalGlow { 0% { box-shadow: 0 0 20px rgba(0,224,164,0.08); } 50% { box-shadow: 0 0 48px rgba(0,224,164,0.20); } 100% { box-shadow: 0 0 20px rgba(0,224,164,0.08); } }
-    @keyframes ceilingGlow { 0% { box-shadow:0 0 24px rgba(0,255,170,0.10); } 50% { box-shadow:0 0 55px rgba(0,255,170,0.30); } 100% { box-shadow:0 0 24px rgba(0,255,170,0.10); } }
-    @keyframes ceilingShine { 0% { transform: translateX(-100%); } 50% { transform: translateX(100%); } 100% { transform: translateX(100%); } }
-    @keyframes rocketFloat { 0% { transform: translateY(0) rotate(-8deg); } 50% { transform: translateY(-9px) rotate(5deg); } 100% { transform: translateY(0) rotate(-8deg); } }
-    @keyframes pageFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes gridMove {
+      from { background-position: 0 0; }
+      to { background-position: 38px 38px; }
+    }
+
+    @keyframes shineHero {
+      0% { transform: translateX(-120%); }
+      55% { transform: translateX(120%); }
+      100% { transform: translateX(120%); }
+    }
+
+    @keyframes cardShine {
+      0% { transform: translateX(-120%); }
+      60% { transform: translateX(130%); }
+      100% { transform: translateX(130%); }
+    }
+
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes glowPulse {
+      0%,100% { box-shadow: 0 0 26px rgba(56,255,208,0.10); }
+      50% { box-shadow: 0 0 55px rgba(56,255,208,0.22); }
+    }
+
+    @keyframes rocketFloat {
+      0%,100% { transform: translateY(0) rotate(-8deg); }
+      50% { transform: translateY(-10px) rotate(5deg); }
+    }
+
+    @keyframes floatStar {
+      0%,100% { transform: translateY(0); opacity: .25; }
+      50% { transform: translateY(-8px); opacity: .55; }
+    }
+
+    @media (max-width: 380px) {
+      .hero-value { font-size: 30px; }
+      .stat-card strong { font-size: 25px; }
+      .market-card strong { font-size: 15px; }
+      .brand h1 { font-size: 20px; }
+    }
   </style>
 </head>
 
 <body>
-  <div class="app">
-    <div class="top">
-      <h2>HALKAARZ VIP ÜYE TERMİNALİ</h2>
-      <div class="top-sub">Canlı piyasa paneli • VIP özel liste ekranı</div>
+  <main class="shell">
+    <div class="hero">
+      <div class="hero-top">
+        <div class="brand">
+          <div class="logo">📈</div>
+          <div>
+            <h1>HALKAARZ<br>VIP TERMINAL</h1>
+            <p>Canlı piyasa paneli • özel sinyal ekranı</p>
+          </div>
+        </div>
+
+        <div class="vip-pill" id="vipStatusPill">FREE</div>
+      </div>
+
+      <div class="hero-bottom">
+        <div>
+          <div class="hero-title">BIST 100</div>
+          <div class="hero-value" id="heroBistValue">13.808,2</div>
+          <div class="hero-change" id="heroBistChange">▲ +4.89%</div>
+        </div>
+
+        <div class="hero-mini">
+          <small>TOPLAM HACİM</small>
+          <b id="heroVolume">0 ₺</b>
+          <div class="mini-change">Canlı terminal verisi</div>
+        </div>
+      </div>
     </div>
 
-    <div id="homePage" class="page active-page">
-      <div class="market">
-        <div class="box">
-          <small>BİST 100</small>
-          <strong>13.808,2</strong>
-          <span class="green">+4.89%</span>
+    <section id="homePage" class="page active">
+      <div class="section-title">
+        <h2>Piyasa Özeti</h2>
+        <span>Canlı takip</span>
+      </div>
+
+      <div class="market-row">
+        <div class="glass-card market-card">
+          <small>BIST 100</small>
+          <strong id="bist100Value">13.808,2</strong>
+          <span id="bist100Change">+4.89%</span>
         </div>
-        <div class="box">
-          <small>BİST 30</small>
+
+        <div class="glass-card market-card">
+          <small>BIST 30</small>
           <strong>15.791,1</strong>
-          <span class="green">+4.91%</span>
+          <span>+4.91%</span>
         </div>
-        <div class="box">
+
+        <div class="glass-card market-card">
           <small>VİOP</small>
           <strong>16.115</strong>
-          <span class="green">+5.97%</span>
+          <span>+5.97%</span>
         </div>
       </div>
 
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-title">👥 GÜNCEL VIP ÜYE SAYISI</div>
-          <div class="stat-value" id="vipCount">0</div>
+        <div class="glass-card stat-card">
+          <div class="icon">👥</div>
+          <small>GÜNCEL VIP ÜYE SAYISI</small>
+          <strong id="vipCount">0</strong>
         </div>
-        <div class="stat-card">
-          <div class="stat-title">💰 TOPLAM HACİM</div>
-          <div class="stat-value" id="totalVolume">0 ₺</div>
+
+        <div class="glass-card stat-card">
+          <div class="icon">💰</div>
+          <small>TOPLAM HACİM</small>
+          <strong id="totalVolume">0 ₺</strong>
         </div>
       </div>
 
-      <div id="ceilingCandidateBox" class="ceiling-card">
-        <div class="rocket-bg">🚀</div>
-        <div class="ceiling-label">🚀 TAVAN ADAYI</div>
-        <h2 id="ceilingStock"></h2>
+      <div id="ceilingCandidateBox" class="glass-card ceiling-card">
+        <div class="rocket">🚀</div>
+        <div class="label">TAVAN ADAYI</div>
+        <h3 id="ceilingStock"></h3>
         <div id="ceilingPotential" class="ceiling-potential"></div>
-        <p id="ceilingNote" class="ceiling-note"></p>
-        <small id="ceilingTime" style="color:#73807c;position:relative;z-index:2;"></small>
+        <p id="ceilingNote"></p>
+        <small id="ceilingTime"></small>
       </div>
 
-      <div id="liveSignalBox" class="live-signal">
-        <div class="live-signal-label">📡 CANLI SİNYAL</div>
+      <div id="liveSignalBox" class="glass-card signal-card">
+        <div class="label">📡 CANLI SİNYAL</div>
         <h3 id="liveSignalTitle"></h3>
         <p id="liveSignalText"></p>
         <small id="liveSignalTime"></small>
       </div>
-    </div>
+    </section>
 
-    <div id="newsPage" class="page">
-      <h2 class="page-title">📰 Haberler</h2>
-      <div id="newsContainer"></div>
-    </div>
+    <section id="newsPage" class="page">
+      <div class="page-head">
+        <h2>Haberler</h2>
+        <p>Türkiye piyasasına dair güncel akış</p>
+      </div>
+      <div id="newsContainer" class="news-list"></div>
+    </section>
 
-    <div id="specialPage" class="page">
-      <h2 class="page-title">⭐ TAVAN OLACAK HİSSELER</h2>
+    <section id="specialPage" class="page">
+      <div class="page-head">
+        <h2>Tavan Hisseler</h2>
+        <p>VIP üyeler için özel takip listesi</p>
+      </div>
 
       <div id="specialVipLock" class="vip-lock" style="display:none;">
         <h2>🔒 VIP Erişim Gerekli</h2>
         <p>
-          Özel Liste alanı sadece VIP üyeler içindir.<br>
-          VIP GRUP ÜYELERİ BU BİLGİYE ERİŞEBİLİR.
+          Bu alan sadece VIP üyeler içindir.<br>
+          VIP gruba katılmak için aşağıdaki butona bas.
         </p>
         <a class="vip-button" id="vipJoinButton" href="#">VIP Ol</a>
       </div>
 
-      <div id="specialContainer"></div>
-    </div>
+      <div id="specialContainer" class="list-stack"></div>
+    </section>
 
-    <div id="profitPage" class="page">
-      <h2 class="page-title">💰 Bugünün Karı</h2>
-      <div id="todayProfitBox" class="card" style="display:none;">
-        <h2 id="profitTitle" style="margin:0;"></h2>
-        <div id="profitRate" style="font-size:42px;font-weight:900;color:#00f0ae;margin:14px 0;"></div>
+    <section id="profitPage" class="page">
+      <div class="page-head">
+        <h2>Bugünün Karı</h2>
+        <p>Admin tarafından girilen günlük sonuç ekranı</p>
+      </div>
+
+      <div id="todayProfitBox" class="glass-card content-card" style="display:none;">
+        <h3 id="profitTitle"></h3>
+        <div id="profitRate" style="position:relative;z-index:2;font-size:44px;font-weight:900;color:var(--green);margin:8px 0 12px;"></div>
         <p id="profitText"></p>
         <small id="profitTime"></small>
       </div>
+
       <div id="profitEmpty" class="empty-state">
         <div class="star">☆</div>
         <h3>Bugünün karı henüz girilmedi</h3>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 
   <div id="popupBox" class="popup-overlay">
     <div class="popup-card">
@@ -599,12 +857,12 @@
     </div>
   </div>
 
-  <div class="bottom">
-    <div class="nav active" onclick="showPage('home')" id="nav-home">🏠<br>Anasayfa</div>
-    <div class="nav" onclick="showPage('news')" id="nav-news">📰<br>Haberler</div>
-    <div class="nav" onclick="showPage('special')" id="nav-special">⭐<br>Özel Liste</div>
-    <div class="nav" onclick="showPage('profit')" id="nav-profit">💰<br>Bugünün Karı</div>
-  </div>
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="showPage('home')" id="nav-home"><span>🏠</span>Anasayfa</button>
+    <button class="nav-item" onclick="showPage('news')" id="nav-news"><span>📰</span>Haberler</button>
+    <button class="nav-item" onclick="showPage('special')" id="nav-special"><span>⭐</span>Özel Liste</button>
+    <button class="nav-item" onclick="showPage('profit')" id="nav-profit"><span>💰</span>Günün Karı</button>
+  </nav>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -636,15 +894,15 @@
 
     async function initApp() {
       const vipButton = document.getElementById("vipJoinButton");
-      if (vipButton) {
-        vipButton.href = VIP_PROFILE_URL;
-      }
+      if (vipButton) vipButton.href = VIP_PROFILE_URL;
 
       if (user && user.id) {
         const userId = String(user.id);
         const snapshot = await db.ref("vipUsers/" + userId).once("value");
         isVipUser = snapshot.exists();
       }
+
+      document.getElementById("vipStatusPill").innerText = isVipUser ? "VIP ACTIVE" : "FREE";
 
       startTerminal();
       listenVipStats();
@@ -662,10 +920,10 @@
     }
 
     function showPage(page) {
-      document.querySelectorAll(".page").forEach(p => p.classList.remove("active-page"));
-      document.querySelectorAll(".nav").forEach(n => n.classList.remove("active"));
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
 
-      document.getElementById(page + "Page").classList.add("active-page");
+      document.getElementById(page + "Page").classList.add("active");
       document.getElementById("nav-" + page).classList.add("active");
 
       if (page === "special" && !isVipUser) {
@@ -703,13 +961,19 @@
 
           const result = data.chart.result[0];
           const meta = result.meta;
+
           const price = meta.regularMarketPrice;
           const previousClose = meta.previousClose;
           const change = price - previousClose;
           const percent = (change / previousClose) * 100;
 
-          document.querySelector(".box:nth-child(1) strong").innerText = price.toLocaleString("tr-TR");
-          document.querySelector(".box:nth-child(1) span").innerText = (percent >= 0 ? "+" : "") + percent.toFixed(2) + "%";
+          const priceText = price.toLocaleString("tr-TR");
+          const percentText = (percent >= 0 ? "+" : "") + percent.toFixed(2) + "%";
+
+          document.getElementById("bist100Value").innerText = priceText;
+          document.getElementById("bist100Change").innerText = percentText;
+          document.getElementById("heroBistValue").innerText = priceText;
+          document.getElementById("heroBistChange").innerText = "▲ " + percentText;
         } catch (error) {
           console.log(error);
         }
@@ -726,31 +990,29 @@
         if (!data) {
           document.getElementById("vipCount").innerText = "0";
           document.getElementById("totalVolume").innerText = "0 ₺";
+          document.getElementById("heroVolume").innerText = "0 ₺";
           return;
         }
 
         document.getElementById("vipCount").innerText = data.vipCount || "0";
         document.getElementById("totalVolume").innerText = data.volume || "0 ₺";
+        document.getElementById("heroVolume").innerText = data.volume || "0 ₺";
       });
     }
 
     function listenLiveSignal() {
       db.ref("liveSignal").on("value", snapshot => {
         const signal = snapshot.val();
-
         const box = document.getElementById("liveSignalBox");
-        const title = document.getElementById("liveSignalTitle");
-        const text = document.getElementById("liveSignalText");
-        const time = document.getElementById("liveSignalTime");
 
         if (!signal || !signal.active) {
           box.style.display = "none";
           return;
         }
 
-        title.innerText = signal.title || "";
-        text.innerText = signal.text || "";
-        time.innerText = signal.time || "";
+        document.getElementById("liveSignalTitle").innerText = signal.title || "";
+        document.getElementById("liveSignalText").innerText = signal.text || "";
+        document.getElementById("liveSignalTime").innerText = signal.time || "";
         box.style.display = "block";
       });
     }
@@ -769,7 +1031,6 @@
         document.getElementById("ceilingPotential").innerText = data.potential || "";
         document.getElementById("ceilingNote").innerText = data.note || "";
         document.getElementById("ceilingTime").innerText = data.time || "";
-
         box.style.display = "block";
       });
     }
@@ -794,7 +1055,7 @@
 
         entries.forEach(news => {
           container.innerHTML += `
-            <div class="card">
+            <div class="glass-card content-card">
               <h3>${news.title || ""}</h3>
               <p>${news.text || ""}</p>
               <small>${news.time || ""}</small>
@@ -826,8 +1087,8 @@
 
         entries.forEach(item => {
           container.innerHTML += `
-            <div class="card">
-              <h3 style="color:#00f0ae;">⭐ ${item.stock || ""}</h3>
+            <div class="glass-card content-card">
+              <h3 style="color:var(--green);">⭐ ${item.stock || ""}</h3>
               <p>${item.note || ""}</p>
               <small>${item.time || ""}</small>
             </div>

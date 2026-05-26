@@ -389,6 +389,54 @@
       box-shadow: 0 0 28px rgba(0,240,174,0.18);
     }
 
+    .popup-overlay {
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.76);
+      z-index:9999;
+      align-items:center;
+      justify-content:center;
+      padding:25px;
+      backdrop-filter: blur(10px);
+    }
+
+    .popup-card {
+      max-width:420px;
+      width:100%;
+      background:
+        linear-gradient(135deg, rgba(0,240,174,0.16), rgba(255,255,255,0.04)),
+        #07110e;
+      border:1px solid rgba(0,240,174,0.25);
+      border-radius:28px;
+      padding:28px;
+      box-shadow:0 0 55px rgba(0,240,174,0.20);
+      text-align:center;
+    }
+
+    .popup-card h2 {
+      margin:0 0 12px 0;
+      font-size:26px;
+      font-weight:900;
+    }
+
+    .popup-card p {
+      color:#c8d4d1;
+      line-height:1.6;
+      white-space:pre-line;
+    }
+
+    .popup-card button {
+      margin-top:20px;
+      background:#00f0ae;
+      color:#00110c;
+      border:none;
+      padding:13px 26px;
+      border-radius:16px;
+      font-weight:900;
+      cursor:pointer;
+    }
+
     .bottom {
       position: fixed;
       bottom: 14px;
@@ -514,7 +562,7 @@
     </div>
 
     <div id="specialPage" class="page">
-      <h2 class="page-title">⭐ TAVAN HİSSELER</h2>
+      <h2 class="page-title">⭐ TAVAN OLACAK HİSSELER</h2>
 
       <div id="specialVipLock" class="vip-lock" style="display:none;">
         <h2>🔒 VIP Erişim Gerekli</h2>
@@ -522,7 +570,7 @@
           Özel Liste alanı sadece VIP üyeler içindir.<br>
           VIP GRUP ÜYELERİ BU BİLGİYE ERİŞEBİLİR.
         </p>
-        <a class="vip-button" href="https://t.me/senin_grubun">VIP Ol</a>
+        <a class="vip-button" id="vipJoinButton" href="#">VIP Ol</a>
       </div>
 
       <div id="specialContainer"></div>
@@ -543,6 +591,14 @@
     </div>
   </div>
 
+  <div id="popupBox" class="popup-overlay">
+    <div class="popup-card">
+      <h2 id="popupTitle">Duyuru</h2>
+      <p id="popupText"></p>
+      <button onclick="closePopup()">Tamam</button>
+    </div>
+  </div>
+
   <div class="bottom">
     <div class="nav active" onclick="showPage('home')" id="nav-home">🏠<br>Anasayfa</div>
     <div class="nav" onclick="showPage('news')" id="nav-news">📰<br>Haberler</div>
@@ -557,6 +613,8 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
     tg.ready();
+
+    const VIP_PROFILE_URL = "https://t.me/KULLANICI_ADIN";
 
     const firebaseConfig = {
       apiKey: "AIzaSyALt8zDibjQy07ImqA3EepJbnIiQa1HmDk",
@@ -577,6 +635,11 @@
     initApp();
 
     async function initApp() {
+      const vipButton = document.getElementById("vipJoinButton");
+      if (vipButton) {
+        vipButton.href = VIP_PROFILE_URL;
+      }
+
       if (user && user.id) {
         const userId = String(user.id);
         const snapshot = await db.ref("vipUsers/" + userId).once("value");
@@ -589,6 +652,7 @@
       listenCeilingCandidate();
       listenNews();
       listenTodayProfit();
+      listenPopupAnnouncement();
 
       if (isVipUser) {
         listenSpecialList();
@@ -612,6 +676,22 @@
     function lockSpecialList() {
       document.getElementById("specialContainer").innerHTML = "";
       document.getElementById("specialVipLock").style.display = "block";
+    }
+
+    function listenPopupAnnouncement() {
+      db.ref("popupAnnouncement").on("value", snapshot => {
+        const data = snapshot.val();
+
+        if (!data || !data.active) return;
+
+        document.getElementById("popupTitle").innerText = data.title || "Duyuru";
+        document.getElementById("popupText").innerText = data.text || "";
+        document.getElementById("popupBox").style.display = "flex";
+      });
+    }
+
+    function closePopup() {
+      document.getElementById("popupBox").style.display = "none";
     }
 
     function startTerminal() {

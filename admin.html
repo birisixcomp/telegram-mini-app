@@ -55,6 +55,11 @@
       color:white;
     }
 
+    button.telegram {
+      background:#229ED9;
+      color:white;
+    }
+
     .section {
       padding:20px;
       background:#0d0d0d;
@@ -134,6 +139,31 @@
   </div>
 
   <div class="section">
+    <h3>📢 Popup Duyuru Gönder</h3>
+
+    <input id="popupTitleInput" placeholder="Duyuru başlığı: Örn. Önemli Bilgilendirme"><br>
+    <textarea id="popupTextInput" placeholder="Terminal açıldığında görünecek duyuru metni..."></textarea><br>
+
+    <button onclick="sendPopupAnnouncement()">Popup Yayınla</button>
+    <button class="danger" onclick="clearPopupAnnouncement()">Popup Temizle</button>
+
+    <h3>Aktif Popup</h3>
+    <div id="activePopup" class="item"></div>
+  </div>
+
+  <div class="section">
+    <h3>📨 Telegram Grubuna Mesaj Gönder</h3>
+
+    <input id="telegramTitle" placeholder="Başlık: Örn. Güncel Piyasa Notu"><br>
+    <textarea id="telegramText" placeholder="Telegram grubuna gönderilecek mesaj..."></textarea><br>
+
+    <button class="telegram" onclick="queueTelegramMessage()">Telegram'a Gönder</button>
+
+    <h3>Son Telegram Kuyruğu</h3>
+    <div id="telegramQueueStatus" class="item">Henüz mesaj yok.</div>
+  </div>
+
+  <div class="section">
     <h3>VIP Kullanıcı Ekle</h3>
     <input id="vipId" placeholder="Telegram ID">
     <br>
@@ -150,6 +180,7 @@
     <textarea id="signalText" placeholder="Sinyal detayı yaz..."></textarea><br>
 
     <button onclick="sendSignal()">Sinyali Yayınla</button>
+    <button class="telegram" onclick="sendSignalAndTelegram()">Sinyali Yayınla + Telegram'a Gönder</button>
     <button class="danger" onclick="clearSignal()">Sinyali Temizle</button>
 
     <h3>Aktif Sinyal</h3>
@@ -164,6 +195,7 @@
     <textarea id="ceilingNote" placeholder="Açıklama: Örn. Tavan takibi yapılacak."></textarea><br>
 
     <button onclick="sendCeilingCandidate()">Tavan Adayını Yayınla</button>
+    <button class="telegram" onclick="sendCeilingAndTelegram()">Tavan Adayı + Telegram'a Gönder</button>
     <button class="danger" onclick="clearCeilingCandidate()">Tavan Adayını Temizle</button>
 
     <h3>Aktif Tavan Adayı</h3>
@@ -177,6 +209,7 @@
     <textarea id="newsText" placeholder="Haber metni"></textarea><br>
 
     <button onclick="addNews()">Haberi Ekle</button>
+    <button class="telegram" onclick="addNewsAndTelegram()">Haberi Ekle + Telegram'a Gönder</button>
     <button class="danger" onclick="clearNews()">Tüm Haberleri Temizle</button>
 
     <h3>Haber Listesi</h3>
@@ -204,6 +237,7 @@
     <textarea id="profitText" placeholder="Açıklama: Örn. 3 işlemden 2'si kâr aldı."></textarea><br>
 
     <button onclick="sendTodayProfit()">Bugünün Karını Yayınla</button>
+    <button class="telegram" onclick="sendProfitAndTelegram()">Bugünün Karı + Telegram'a Gönder</button>
     <button class="danger" onclick="clearTodayProfit()">Bugünün Karını Temizle</button>
 
     <h3>Aktif Bugünün Karı</h3>
@@ -230,6 +264,58 @@
     function nowTR() {
       return new Date().toLocaleString("tr-TR");
     }
+
+    function queueTelegramPayload(title, text, type = "manual") {
+      if (!title || !text) {
+        alert("Telegram mesajı için başlık ve metin gerekli");
+        return;
+      }
+
+      db.ref("telegramQueue").push({
+        title,
+        text,
+        type,
+        time: nowTR(),
+        sent: false
+      });
+
+      alert("Telegram gönderim kuyruğuna eklendi");
+    }
+
+    function queueTelegramMessage() {
+      const title = document.getElementById("telegramTitle").value.trim();
+      const text = document.getElementById("telegramText").value.trim();
+
+      if (!title || !text) {
+        alert("Başlık ve mesaj yaz");
+        return;
+      }
+
+      queueTelegramPayload(title, text, "manual");
+
+      document.getElementById("telegramTitle").value = "";
+      document.getElementById("telegramText").value = "";
+    }
+
+    db.ref("telegramQueue").limitToLast(1).on("value", snapshot => {
+      const data = snapshot.val() || {};
+      const box = document.getElementById("telegramQueueStatus");
+      const entries = Object.values(data);
+
+      if (!entries.length) {
+        box.innerHTML = "Henüz mesaj yok.";
+        return;
+      }
+
+      const item = entries[0];
+
+      box.innerHTML = `
+        <b>${item.title || ""}</b><br><br>
+        ${item.text || ""}<br><br>
+        <small class="muted">${item.time || ""}</small><br>
+        <small class="muted">Durum: ${item.sent ? "Gönderildi" : "Kuyrukta"}</small>
+      `;
+    });
 
     function updateTerminalStats() {
       const vipCount = document.getElementById("vipCountInput").value.trim();
@@ -258,6 +344,49 @@
 
       document.getElementById("vipCountInput").value = data.vipCount || "";
       document.getElementById("volumeInput").value = data.volume || "";
+    });
+
+    function sendPopupAnnouncement() {
+      const title = document.getElementById("popupTitleInput").value.trim();
+      const text = document.getElementById("popupTextInput").value.trim();
+
+      if (!title || !text) {
+        alert("Popup başlığı ve metni yaz");
+        return;
+      }
+
+      db.ref("popupAnnouncement").set({
+        title,
+        text,
+        time: nowTR(),
+        active: true
+      });
+
+      alert("Popup duyuru yayınlandı");
+    }
+
+    function clearPopupAnnouncement() {
+      db.ref("popupAnnouncement").set({
+        active: false
+      });
+
+      alert("Popup duyuru temizlendi");
+    }
+
+    db.ref("popupAnnouncement").on("value", snapshot => {
+      const data = snapshot.val();
+      const box = document.getElementById("activePopup");
+
+      if (!data || !data.active) {
+        box.innerHTML = "Aktif popup duyuru yok.";
+        return;
+      }
+
+      box.innerHTML = `
+        <b>${data.title}</b><br><br>
+        ${data.text}<br><br>
+        <small class="muted">${data.time}</small>
+      `;
     });
 
     function addVip() {
@@ -316,6 +445,17 @@
       alert("Sinyal terminale gönderildi");
     }
 
+    function sendSignalAndTelegram() {
+      sendSignal();
+
+      const title = document.getElementById("signalTitle").value.trim();
+      const text = document.getElementById("signalText").value.trim();
+
+      if (title && text) {
+        queueTelegramPayload("📡 " + title, text, "signal");
+      }
+    }
+
     function clearSignal() {
       db.ref("liveSignal").set({ active: false });
       alert("Sinyal temizlendi");
@@ -356,6 +496,22 @@
       });
 
       alert("Tavan adayı yayınlandı");
+    }
+
+    function sendCeilingAndTelegram() {
+      sendCeilingCandidate();
+
+      const stock = document.getElementById("ceilingStock").value.trim().toUpperCase();
+      const potential = document.getElementById("ceilingPotential").value.trim();
+      const note = document.getElementById("ceilingNote").value.trim();
+
+      if (stock && potential && note) {
+        queueTelegramPayload(
+          "🚀 TAVAN ADAYI: " + stock,
+          "Potansiyel: " + potential + "\n\n" + note,
+          "ceiling"
+        );
+      }
     }
 
     function clearCeilingCandidate() {
@@ -399,6 +555,29 @@
       document.getElementById("newsText").value = "";
 
       alert("Haber eklendi");
+    }
+
+    function addNewsAndTelegram() {
+      const title = document.getElementById("newsTitle").value.trim();
+      const text = document.getElementById("newsText").value.trim();
+
+      if (!title || !text) {
+        alert("Haber başlığı ve haber metni yaz");
+        return;
+      }
+
+      db.ref("news").push({
+        title,
+        text,
+        time: nowTR()
+      });
+
+      queueTelegramPayload("📰 " + title, text, "news");
+
+      document.getElementById("newsTitle").value = "";
+      document.getElementById("newsText").value = "";
+
+      alert("Haber eklendi ve Telegram kuyruğuna gönderildi");
     }
 
     function deleteNews(id) {
@@ -503,6 +682,22 @@
       });
 
       alert("Bugünün karı yayınlandı");
+    }
+
+    function sendProfitAndTelegram() {
+      sendTodayProfit();
+
+      const title = document.getElementById("profitTitle").value.trim();
+      const rate = document.getElementById("profitRate").value.trim();
+      const text = document.getElementById("profitText").value.trim();
+
+      if (title && rate && text) {
+        queueTelegramPayload(
+          "💰 " + title + " " + rate,
+          text,
+          "profit"
+        );
+      }
     }
 
     function clearTodayProfit() {
